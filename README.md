@@ -35,7 +35,7 @@ Study area: Yangtze River Delta (YRD), Greater Bay Area (GBA), Beijing-Tianjin-H
 
 **EN**: The most valuable part of this project isn't the methods used — it's what actually broke in the data pipeline, and how it was diagnosed. Two representative examples:
 
-**中**：这个项目最有价值的部分不是"用了什么方法"，而是数据管道真实出过的问题和排查过程，例如：
+**中**：这个项目最有价值的部分不是用的方法，而是数据管道真实出过的问题和排查过程，例如：
 
 - **EN — Architecture fix**: A shared mutable `roi` variable across regions caused cross-region data contamination (the GBA/BTH scripts were actually computing YRD's geographic extent) → resolved by switching to a factory-function pattern for full isolation.
   **中 — 架构重构**：多区域共享可变 `roi` 变量导致跨区域数据串线（GBA/BTH 脚本实际算的是 YRD 的地理范围）→ 改用工厂函数模式彻底隔离
