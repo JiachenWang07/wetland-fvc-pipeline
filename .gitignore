@@ -1,0 +1,31 @@
+# === 原始/中间数据（有使用条款或体积过大，不入库）===
+*.tif
+*.tiff
+*.img
+*.hdr
+GEE_Wetland_v4/
+*_RawLandCover_*.tif
+*_FVC_*_30m_*.tif
+*_TrendClass_*.tif
+*_Slope_Raw_*.tif
+
+# 允许保留的：脱敏后的聚合统计结果（区域级CSV），放在 outputs/ 下，
+# 逐条 review 后手动 git add，不做批量白名单，避免误传中间产物
+
+# === 团队/个人隐私信息 ===
+# 申报书、老师联系方式、团队其他成员代码等，人工确认后才放入仓库，
+# 默认不追踪任何非本人（FVC模块）相关文件
+*申报书*
+*联系方式*
+
+# === 本地开发环境 ===
+.DS_Store
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+node_modules/
+.env
+*.log
+
+# === GEE Asset 路径（如决定脱敏，取消下面注释并手动替换脚本中的真实路径）===
+# 见 docs/methodology_notes.md 中"关于Asset路径脱敏"的说明
