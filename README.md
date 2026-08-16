@@ -32,6 +32,8 @@ Study area: Yangtze River Delta (YRD), Greater Bay Area (GBA), Beijing-Tianjin-H
   **中**：湿地命运分组（持续/新增/丧失）+ 趋势检验（Sen's slope + Mann-Kendall）
 - **EN**: Cross-method validation (dynamic vs. fixed endmembers; six-category area stats vs. transition matrix)
   **中**：跨方法交叉验证（动态端元 vs 固定端元、六类图 vs 转移矩阵）
+- **EN**: Built on Google Earth Engine (cloud-scale raster processing) + Python geospatial stack (rasterio, pandas)
+  **中**：基于 Google Earth Engine（云端栅格计算）+ Python 地理空间技术栈（rasterio、pandas）搭建
 
 ## Highlights: A Full Debugging & Validation Chain 亮点：一条完整的调试与验证链条
 
