@@ -3,9 +3,8 @@
 > **EN**: A reproducible geospatial data pipeline for analyzing multi-decadal wetland vegetation-cover change across three Chinese urban agglomerations (1985–2020)
 > **中**：面向长时序遥感数据的可复现地理空间分析管线——三大城市群湿地植被覆盖变化案例（1985–2020）
 
-<!-- TODO：效果图 / 架构图占位。建议放1张最有冲击力的结果图（如四象限图或六类图），
-     再放1张架构图（工厂函数管线示意），不需要现在做，占位即可 -->
-![result placeholder](docs/assets/placeholder.png)
+![YRD FVC Trend Classification 1985–2020](docs/assets/Fig8a_YRD_FVC_TrendClassification.png)
+*Yangtze River Delta wetland FVC trend classification, 1985–2020 (pixel-level OLS fit).*
 
 ---
 
@@ -20,9 +19,6 @@ Study area: Yangtze River Delta (YRD), Greater Bay Area (GBA), Beijing-Tianjin-H
 研究对象：长三角(YRD)、粤港澳大湾区(GBA)、京津冀(BTH) 三大城市群，1985–2020年。
 
 ## What This Does 这个仓库解决什么问题
-
-<!-- TODO：3-5条bullet，讲清楚pipeline做了什么，避免"研究了湿地"式表述，
-     强调地理空间数据工程能力。以下先给中英对照占位 -->
 
 - **EN**: Computes region-level dynamic FVC from Landsat time series using a dimidiate pixel model
   **中**：基于 Landsat 时序影像与二分像元模型，动态计算区域级 FVC（植被覆盖度）
