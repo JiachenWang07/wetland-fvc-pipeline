@@ -83,6 +83,12 @@
 
 **发布前release cleanup（第三方静态审计发现，逐条核实后修复）**：一轮基于最新commit的独立静态审计提出了11条问题，核实后确认8条真实、3条是基于过时快照的误报（`colab_analysis/`目录、重复图片此前已经处理过）。真实问题里最值得记录的一条：`plotting.py`的`plot_net_flow_by_interval`函数用硬编码中文字符串（`"耕地"`/`"不透水面"`）过滤转移类别，但GEE实际导出的`converted_class_name`是英文（`Rainfed Cropland`/`Impervious Surface`，定义见`wetland_transition_structure.js`的`LANDCOVER_CLASS_NAMES`），这个过滤条件永远匹配不上，会静默产出一张空图——**之前只用自己编写的中文合成测试数据测试过这个函数，没有用真实数据验证过，所以这个bug一直没暴露**。修复方式改用`converted_class_code`（数字代码）匹配，不依赖字符串语言。其余修复：两处`pd.concat([])`在空输入时的静默崩溃（`trend_analysis.py`、`six_category_area_stats.py`）改为清晰的`RuntimeError`提示；`README.md`/`gee_scripts/README.md`/`architecture.md`/`limitations.md`里多处过时表述（Python阶段验证状态、`colab_analysis`旧路径引用、"42任务未完成"这类已经不再准确的描述）予以更新。
 
+**发布前clean-environment runtime audit（第三方实测审计，不是静态推理）**：另一轮独立审计在干净环境里实际安装依赖、逐个import、实际执行脚本，跑出了4个真实的运行时问题，跟之前静态审计的性质不同——是复现出来的报错，不是推理出来的风险。核实后全部属实，修复如下：
+- `python_analysis/README.md`两条命令路径错误——`pip install -r requirements.txt`和`cd src/`都假设了错误的当前工作目录（前者应该从仓库根目录执行、写成`pip install -r python_analysis/requirements.txt`；后者应该是`cd python_analysis/src/`）。这类"命令本身逻辑没错、但没写清楚该从哪个目录执行"的问题，之前已经在同一份文档里因为`../outputs/`这个相对路径犯过一次（见上文），这次是同一类错误的第二次出现，值得记一笔提醒自己：写命令类文档时默认工作目录必须显式说明，不能假设读者会"猜对"
+- `sensor_switch_check.py`在被import时会直接执行分析并打印结果（顶层代码没有包在函数里）——这是当初为了方便"整段粘贴进Colab直接跑"而写成顶层脚本形式，但作为仓库里的正式Python模块，import不应该有副作用。改为`main()`函数封装，算法和输出内容完全不变，只是消除了import时的自动执行
+- `cross_validation.py`零有效区域时会静默生成一个1字节的无效CSV（exit code 0，看起来"成功"但实际什么都没算），如果目标目录本身不存在还会在保存阶段抛出一个跟真实原因无关的`OSError`——改为在构造结果之前就检查`rows`是否为空，为空则显式`raise RuntimeError`并给出具体缺什么文件，不再产出一个看似成功、实则无效的输出文件
+- 补充声明`Python >= 3.10`（源码使用了`Path | str`这类3.10+语法），此前从未在文档中说明过运行环境要求
+
 ---
 
 ## 第二轮：四方独立审查与最终裁决

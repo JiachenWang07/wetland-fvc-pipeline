@@ -79,6 +79,13 @@ def main(data_dir: Path | str = DEFAULT_DATA_DIR) -> pd.DataFrame:
             "error_vs_all_classes_pct": round(error_all_classes, 1),
         })
 
+    if not rows:
+        raise RuntimeError(
+            "No regions had usable six-category and transition data — "
+            f"cannot perform cross-validation. Checked data_dir={data_dir}. "
+            "See the [WARN] messages above for which files were missing."
+        )
+
     result = pd.DataFrame(rows)
 
     print("=" * 70)

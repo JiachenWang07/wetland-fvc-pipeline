@@ -25,16 +25,19 @@ Python 统计分析与可视化代码，接在 `gee_scripts/` 导出的CSV之后
 5个核心脚本已经用结构正确的合成数据实际跑通过（不是只做了语法检查），包括故意测试了
 "部分产品文件缺失"这种情况下`plotting.py`是否会优雅跳过而不是整体崩溃——结果符合预期。
 
-**验证进展（2026-08-17）**：YRD/GBA/BTH三区域的`{region}_Indices_36Years.csv`已成功从GEE导出，
-`trend_analysis.py`用真实数据跑通，结果与团队正式研究报告的Sen's slope/Mann-Kendall结论几乎完全
-一致（6组区域×分段检验，5组p值精确到小数点后三位吻合）——这是本轮GitHub重写工作第一次真正意义上
-的端到端验证成功。其余产出（TrendClass/SixCategory/FateGroup等）仍在GEE导出队列中，部分因配额
-限制导出失败，尚未验证。
+**验证进展**：不只是合成数据测试——`trend_analysis.py`用YRD/GBA/BTH三区域真实GEE导出数据跑通，
+Sen's slope/Mann-Kendall结果与团队正式研究报告6/6组区域×分段检验一致；`six_category_area_stats.py`
+用三区域真实历史栅格验证，6/6类别在浮点精度量级（~10⁻⁷ km²）复现历史参照结果，三区域投资调查均
+已CLOSED。完整验证历史见根目录README的"Validation Status"章节和[`../docs/methodology_notes.md`](../docs/methodology_notes.md)。
 
 ## 依赖
 
+Python >= 3.10（源码用了`Path | str`这类3.10+才支持的类型标注语法）。
+
+从**仓库根目录**执行：
+
 ```bash
-pip install -r requirements.txt
+pip install -r python_analysis/requirements.txt
 ```
 
 ## ⚠️ 在Colab里跑，不要用`import`
@@ -45,8 +48,10 @@ Colab每次新notebook/新session都是全新环境，`sys.path`里没有本地�
 
 每个脚本可以独立运行（假设仓库根目录的`outputs/`里已经有对应的CSV/TIF文件——**不是**`python_analysis/outputs/`，是仓库最外层那个`outputs/`，参见`data_loader.py`里`DEFAULT_DATA_DIR`的实际解析结果）：
 
+从**仓库根目录**执行：
+
 ```bash
-cd src/
+cd python_analysis/src/
 python trend_analysis.py
 python six_category_area_stats.py
 python cross_validation.py
