@@ -89,6 +89,8 @@
 - `cross_validation.py`零有效区域时会静默生成一个1字节的无效CSV（exit code 0，看起来"成功"但实际什么都没算），如果目标目录本身不存在还会在保存阶段抛出一个跟真实原因无关的`OSError`——改为在构造结果之前就检查`rows`是否为空，为空则显式`raise RuntimeError`并给出具体缺什么文件，不再产出一个看似成功、实则无效的输出文件
 - 补充声明`Python >= 3.10`（源码使用了`Path | str`这类3.10+语法），此前从未在文档中说明过运行环境要求
 
+**同一轮runtime audit的第二次回归复测**：初次修复处理了4个核心脚本（`trend_analysis.py`、`six_category_area_stats.py`、`cross_validation.py`、`sensor_switch_check.py`的import副作用），复测时发现另外5个脚本存在同一类问题、只是之前没被专门测过：`data_diagnostics.py`（空数据时先生成一张空图再触发`ZeroDivisionError`）、`report_comparison.py`（空`live_df`导致merge阶段`KeyError: 'region'`）、`endmember_method_sensitivity.py`（空`summary_rows`导致选列阶段pandas内部`KeyError`）、`endmember_behavior_check.py`（同样是merge前的`KeyError: 'region'`）、`sensor_switch_check.py`的`main()`函数本身（虽然import副作用已经修复，但`main()`内部还是会在空数据时打印空DataFrame后以exit code 0"成功"退出）。统一改为在加载数据后立即检查、为空则显式`raise RuntimeError`并注明具体缺什么文件，不再让pandas在更深层的位置抛出让人摸不着头脑的内部异常。5个脚本改完后，**空输入路径和有效输入路径都重新测试过**，不是只验证了"报错这条路径"就假设"正常路径没被破坏"。
+
 ---
 
 ## 第二轮：四方独立审查与最终裁决

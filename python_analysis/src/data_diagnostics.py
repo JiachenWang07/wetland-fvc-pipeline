@@ -163,6 +163,14 @@ def dynamic_vs_fixed_consistency(
 
 def main(data_dir: Path | str = DEFAULT_DATA_DIR) -> None:
     indices_dfs = load_all_regions("indices_36years", data_dir)
+
+    if not indices_dfs:
+        raise RuntimeError(
+            "No regions had usable indices_36years data — cannot run diagnostics. "
+            f"Checked data_dir={data_dir}. See the [WARN] messages above for which "
+            "files were missing."
+        )
+
     out_dir = Path(data_dir)
 
     print("=" * 70)

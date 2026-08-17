@@ -79,6 +79,13 @@ def divergence_endmember_correlation(indices_dfs: dict[str, pd.DataFrame]) -> pd
 def main(data_dir: Path | str = DEFAULT_DATA_DIR) -> None:
     indices_dfs = load_all_regions("indices_36years", data_dir)
 
+    if not indices_dfs:
+        raise RuntimeError(
+            "No regions had usable indices_36years data — cannot check endmember "
+            f"behavior. Checked data_dir={data_dir}. See the [WARN] messages above "
+            "for which files were missing."
+        )
+
     print("=" * 80)
     print("Endmember level and volatility, by region")
     print("=" * 80)

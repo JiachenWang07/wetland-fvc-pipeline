@@ -22,6 +22,13 @@ SWITCH_YEAR = 2013
 def main(data_dir: Path | str = DEFAULT_DATA_DIR) -> pd.DataFrame:
     indices_dfs = load_all_regions("indices_36years", data_dir)
 
+    if not indices_dfs:
+        raise RuntimeError(
+            "No regions had usable indices_36years data — cannot run the sensor "
+            f"switch check. Checked data_dir={data_dir}. See the [WARN] messages "
+            "above for which files were missing."
+        )
+
     print("=" * 70)
     print("STEP 1 — Raw FVC_Dynamic values around the 2013 sensor switch")
     print("=" * 70)

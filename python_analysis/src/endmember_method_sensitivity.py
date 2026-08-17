@@ -270,6 +270,14 @@ def main(data_dir: Path | str = DEFAULT_DATA_DIR) -> tuple[pd.DataFrame, pd.Data
             "fixed_endmember_jump_2012_2013": jump["fixed_endmember_jump"],
         })
 
+    if not summary_rows:
+        raise RuntimeError(
+            "No regions produced endmember-method sensitivity results — required "
+            "both Indices_36Years.csv and the historical FixedEndmember_PixelLevel_v4.csv "
+            f"under data_dir={data_dir}. See the [WARN] messages above for which "
+            "files were missing."
+        )
+
     summary_df = pd.DataFrame(summary_rows)
     per_year_df = pd.concat(per_year_rows, ignore_index=True) if per_year_rows else pd.DataFrame()
 

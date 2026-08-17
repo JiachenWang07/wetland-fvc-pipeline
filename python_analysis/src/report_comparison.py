@@ -43,6 +43,13 @@ REPORTED = [
 def main(data_dir: Path | str = DEFAULT_DATA_DIR) -> pd.DataFrame:
     indices_dfs = load_all_regions("indices_36years", data_dir)
 
+    if not indices_dfs:
+        raise RuntimeError(
+            "No regions had usable indices_36years data — cannot compare against "
+            f"the report. Checked data_dir={data_dir}. See the [WARN] messages "
+            "above for which files were missing."
+        )
+
     live_rows = []
     for region, df in indices_dfs.items():
         region_trends = compute_regional_trends(df, region)
