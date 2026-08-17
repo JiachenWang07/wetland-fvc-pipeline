@@ -38,14 +38,14 @@ Study area: Yangtze River Delta (YRD), Greater Bay Area (GBA), Beijing-Tianjin-H
 1. **GEE stage (cloud, raster processing)** — Paste [`gee_scripts/run_all_combined.js`](gee_scripts/run_all_combined.js) into the [GEE Code Editor](https://code.earthengine.google.com/) and run it. This submits ~42 export tasks to Google Drive. See [`gee_scripts/README.md`](gee_scripts/README.md) for load order if running the modular files individually instead of the combined bundle.
    ⚠️ Requires access to an administrative-boundary asset — see [Data & Reproducibility](#data--reproducibility-数据与复现说明) below before running.
 2. **Export stage** — Approve the submitted tasks in the Code Editor's *Tasks* tab. Outputs land in a Google Drive folder named `Wetland_FVC_Exports`.
-3. **Python stage (local/Colab, statistics & figures)** — Download the CSVs from Drive into `python_analysis/`, install dependencies (`pip install -r python_analysis/requirements.txt`), then run the scripts under `python_analysis/src/`. Core scripts (trend analysis, six-category area stats, cross-validation, plotting) are implemented and tested against synthetic data, but **not yet run against real GEE-exported CSVs** — see [`python_analysis/README.md`](python_analysis/README.md) for exact status and [Known Limitations](#known-limitations-已知局限) below.
+3. **Python stage (local/Colab, statistics & figures)** — Download the CSVs from Drive into a local directory (default `<repo>/outputs/`, overridable via the `WETLAND_DATA_DIR` environment variable), install dependencies (`pip install -r python_analysis/requirements.txt`), then run the scripts under `python_analysis/src/`. This stage has been **validated against real GEE-exported data**, not just synthetic test data — see [`python_analysis/README.md`](python_analysis/README.md) for exact per-script status and [Known Limitations](#known-limitations-已知局限) below.
 
 **中**：这是一个**两阶段pipeline**——Earth Engine没有本地执行模式，无法用一条命令端到端跑通。两个阶段运行在不同环境里，通过Google Drive衔接：
 
 1. **GEE阶段（云端，栅格处理）**——把 [`gee_scripts/run_all_combined.js`](gee_scripts/run_all_combined.js) 整份粘贴进 [GEE Code Editor](https://code.earthengine.google.com/) 运行，会提交约42个导出任务到Google Drive。如果想分模块单独加载而不是用合并版，加载顺序见 [`gee_scripts/README.md`](gee_scripts/README.md)。
    ⚠️ 运行前需要能访问一份行政边界资产——见下方[数据与复现说明](#data--reproducibility-数据与复现说明)。
 2. **导出阶段**——在Code Editor的*Tasks*标签页里逐个批准提交的任务，产出会进入Google Drive上一个叫`Wetland_FVC_Exports`的文件夹。
-3. **Python阶段（本地/Colab，统计与画图）**——把Drive里的CSV下载到`python_analysis/`，安装依赖（`pip install -r python_analysis/requirements.txt`），再跑`python_analysis/src/`下的脚本。核心脚本（趋势分析、六类面积统计、交叉验证、画图）已实现并用合成数据测试过，但**还没有拿真实GEE导出的CSV跑过**，具体状态见 [`python_analysis/README.md`](python_analysis/README.md) 和下方[已知局限](#known-limitations-已知局限)。
+3. **Python阶段（本地/Colab，统计与画图）**——把Drive里的CSV下载到本地目录（默认`<repo>/outputs/`，可用环境变量`WETLAND_DATA_DIR`覆盖），安装依赖（`pip install -r python_analysis/requirements.txt`），再跑`python_analysis/src/`下的脚本。这一阶段**已经用真实GEE导出数据验证过**，不只是合成测试数据，具体每个脚本的状态见 [`python_analysis/README.md`](python_analysis/README.md) 和下方[已知局限](#known-limitations-已知局限)。
 
 ## Highlights: A Full Debugging & Validation Chain 亮点：一条完整的调试与验证链条
 
@@ -112,6 +112,26 @@ Full log 完整调试记录见 [`docs/methodology_notes.md`](docs/methodology_no
 **中**：本仓库**不包含原始数据**（Landsat、GLC_FCS30D 均为有使用条款的公开数据集），代码中会说明数据来源，需自行在 GEE / 官方渠道获取。`outputs/` 中的 CSV 是脱敏后的区域级聚合结果，不含原始像元级数据。
 
 ⚠️ **已知缺口**：行政边界数据源（`gee_scripts/regions_config.js`里的`china`）目前指向本人私有GEE资产，clone本仓库后直接运行会因权限问题失败，`regions_config.js`文件顶部有详细的重建说明。这个问题选择如实标注而不是隐藏——pipeline的逻辑本身是可复现的，边界数据源这一环目前还不是开箱即用的。
+
+## Validation Status 验证状态
+
+**EN**: Beyond "the code runs," several parts of this pipeline have been validated against real exported data or independent recomputation:
+- Three regions' 36-year FVC/EVI/NDMI time series successfully exported and loaded
+- Sen's slope + Mann-Kendall trend results reproduce the team's original report to within numerical tolerance (6/6 region×period combinations, matching direction and p-value)
+- YRD's fixed-endmember FVC export is numerically identical to a from-scratch rerun to floating-point precision (max difference ~2×10⁻¹⁶)
+- Dynamic-vs-fixed endmember method sensitivity was investigated end-to-end (design validated by independent code-path audit, results independently re-derived) and closed with an explicit robust/sensitive/unstable classification per region — see [`methodology_notes.md`](docs/methodology_notes.md)
+- The raster-based six-category area statistics (`python_analysis/src/six_category_area_stats.py`) were validated against historical reference results for **all three regions**, matching to floating-point precision (~10⁻⁷ km² absolute difference)
+
+Full validation history, including investigations that were closed as *inconclusive* or where an initial hypothesis was tested and disproven, is documented in [`docs/methodology_notes.md`](docs/methodology_notes.md) rather than only reporting the results that confirmed expectations.
+
+**中**：不只是"代码能跑"——这个pipeline的多个部分已经用真实导出数据或独立复算验证过：
+- 三区域36年FVC/EVI/NDMI时间序列成功导出并加载
+- Sen's slope + Mann-Kendall趋势结果在数值容差内复现了团队原始报告（6/6区域×时段组合，方向和p值均一致）
+- YRD的固定端元FVC导出与从头重新计算的结果在浮点精度上完全一致（最大差约2×10⁻¹⁶）
+- 动态vs固定端元方法敏感性做过端到端调查（比较设计经独立代码审计确认有效，结果经独立复算），并给出了明确的区域级robust/sensitive/unstable分类后关闭调查——详见 [`methodology_notes.md`](docs/methodology_notes.md)
+- 基于栅格的六类面积统计（`python_analysis/src/six_category_area_stats.py`）已针对**三个区域全部**跟历史参照结果验证，差异在浮点精度量级（约10⁻⁷ km²绝对差）
+
+完整验证历史（包括被关闭为"无法定论"、或假说被提出后经验证推翻的调查）记录在 [`docs/methodology_notes.md`](docs/methodology_notes.md)，不是只报告符合预期的结果。
 
 ## Known Limitations 已知局限
 

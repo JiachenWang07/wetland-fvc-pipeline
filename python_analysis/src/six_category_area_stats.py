@@ -163,6 +163,13 @@ def main(data_dir: Path | str = DEFAULT_DATA_DIR) -> pd.DataFrame:
             results.append(df)
             print(f"[OK] {region}: six-category area stats computed")
 
+    if not results:
+        raise RuntimeError(
+            f"No regions produced six-category results — all raster files missing or "
+            f"grid-mismatched under data_dir={data_dir}. See the [WARN] messages above "
+            f"for the specific reason per region."
+        )
+
     combined = pd.concat(results, ignore_index=True)
     out_path = Path(data_dir) / "SixCategory_AreaStats.csv"
     combined.to_csv(out_path, index=False)

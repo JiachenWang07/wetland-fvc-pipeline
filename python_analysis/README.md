@@ -14,11 +14,10 @@ Python 统计分析与可视化代码，接在 `gee_scripts/` 导出的CSV之后
 - [x] `src/cross_validation.py`（六类图 vs 转移矩阵交叉验证，同时保留"剔除水体"和"全类别"两个版本的对比）
 - [x] `src/plotting.py`（统一PALETTE配色，覆盖4张核心图：区域趋势、命运分组、六类图、净流量）
 - [x] `src/sensor_switch_check.py`（2013 Landsat传感器切换初步诊断，探索性筛查非正式统计检验，结果见`methodology_notes.md`"第四轮：真实数据验证"）
-- [x] `src/data_diagnostics.py`（端元年际稳定性图 + 回退年份使用统计 + 动态/固定FVC一致性检查，三项探索性筛查）
+- [x] `src/data_diagnostics.py`（端元年际稳定性图 + 回退年份使用统计 + FVC/EVI/NDMI三指标动态-固定一致性检查，三项探索性筛查）
 - [x] `src/report_comparison.py`（自动化"报告数值 vs 真实pipeline结果"比对，把此前手动核对的过程变成可复现脚本，报告数值硬编码自3.1节表格）
 - [x] `src/endmember_behavior_check.py`（端元数值年际波动/相关性诊断，GBA异常排查Level 2，配合debugging budget原则——做不出结论就标记unresolved转向优先级更高的YRD传感器问题）
 - [x] `src/endmember_method_sensitivity.py`（真正的动态端元vs固定端元敏感性实验，隔离mask效应，输出三区域robust/sensitive/unstable分类，分类标准显式写在代码里可复核）
-- [x] `src/mask_divergence_multi_indicator.py`（GBA动态/固定掩膜FVC分歧发现的后续验证：把同样的检查扩展到EVI/NDMI，判断分歧是三指数同步、还是FVC独有）
 - [ ] 四象限图（面积×质量）——需要额外的城市级数据拼表逻辑，`data_loader.py`目前还没接入
 - [ ] BNU独立端元对比图——对比的是第三方数据集，不是`gee_scripts/`的产出，不适合套用现有的`load_csv()`模式
 - [ ] `tests/`——目前只做过用合成假数据的手动冒烟测试（确认逻辑跑得通、边界情况不崩溃），没有正式的pytest用例

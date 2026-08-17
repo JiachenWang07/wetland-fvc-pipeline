@@ -44,14 +44,15 @@ YRD 35.9万/GBA 5.68万/BTH 21.68万 万km²，42个导出任务无报错提交�
   没有对应的构建脚本。现在补了`build_combined.sh`，这个声明是真实可验证的
 
 ## 仍未处理、记录在案但不阻塞发布的问题
-- **零测试覆盖**：GEE端本身不便写传统单测，但`colab_analysis/`那边的Python统计逻辑
-  （Sen's slope/Mann-Kendall判断、45%分类、六类归并）适合补pytest，计划中，未开始
+- **零测试覆盖**：GEE端本身不便写传统单测，`python_analysis/`那边的Python统计逻辑
+  （Sen's slope/Mann-Kendall判断、45%分类、六类归并）已用真实数据验证过多轮，但仍没有
+  正式pytest用例，计划中，未开始
 - **无配置驱动**：城市名单、固定端元数值目前硬编码在源码里，不是"改一个配置文件就能
   换研究区域"的通用框架。README定位已避免使用"config-driven"这类会造成落差感的措辞
 - **无边界情况防御**：`getDynamicEndpoints`如果某年百分位数算出`null`（极端云污染年份），
   下游`processIndices`的行为未做显式处理
-- **数据契约未文档化**：各CSV产出的字段名、类型、取值范围目前只能靠读代码确认，计划在
-  `docs/`里补一份`data_schema.md`
+- **数据契约文档**：见 [`../docs/data_schema.md`](../docs/data_schema.md)，各CSV产出的
+  字段名、类型、取值范围已有说明
 
 ## 一次性整体运行版本
 `run_all_combined.js` 是把上面8个文件按依赖顺序拼接成的**单文件合并版**，专门用于

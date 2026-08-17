@@ -109,6 +109,13 @@ def main(data_dir: Path | str = DEFAULT_DATA_DIR) -> pd.DataFrame:
         region_results = compute_regional_trends(df, region)
         all_results.append(region_results)
 
+    if not all_results:
+        raise RuntimeError(
+            "No regions had usable indices_36years data — cannot compute trends. "
+            f"Checked data_dir={data_dir}. See the [WARN] messages above for which "
+            "files were missing."
+        )
+
     combined = pd.concat(all_results, ignore_index=True)
 
     print("\nPrimary (segmented) results:")

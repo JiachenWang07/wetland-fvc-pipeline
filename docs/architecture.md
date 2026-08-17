@@ -27,8 +27,9 @@ flowchart LR
     TYPE["FVC by<br/>wetland subtype"]
   end
 
-  subgraph offline ["python_analysis/ (local/Colab) — in progress"]
+  subgraph offline ["python_analysis/ (local/Colab) — implemented, validated against real data"]
     PY["Sen's slope +<br/>Mann-Kendall (regional)"]
+    SIXCAT["Six-category<br/>area stats (raster)"]
     PLOTS["Figures"]
   end
 
@@ -39,6 +40,7 @@ flowchart LR
   FVC --> exports
   MASK --> exports
   exports --> PY --> PLOTS
+  exports --> SIXCAT --> PLOTS
 ```
 
 ## Why a Factory Function, Not Shared State

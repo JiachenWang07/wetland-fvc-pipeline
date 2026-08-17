@@ -163,7 +163,22 @@ def plot_net_flow_by_interval(trans_dfs: dict[str, pd.DataFrame], out_path: Path
     high-confidence human-driven subset only. Water-body transitions are
     excluded here by construction (only Cropland/Built-up categories are
     plotted), consistent with docs/methodology_notes.md's water-noise
-    filtering rationale."""
+    filtering rationale.
+
+    Matches on `converted_class_code` (the GLC_FCS30D numeric class code),
+    not `converted_class_name` — the exported name strings are English
+    (see LANDCOVER_CLASS_NAMES in gee_scripts/wetland_transition_structure.js,
+    e.g. "Rainfed Cropland", "Impervious Surface"), and an earlier version
+    of this function matched against hardcoded Chinese substrings that
+    never matched the actual export, silently returning an empty plot.
+    Codes are stable across any future relabeling of the display names.
+    """
+    # Cropland codes 10/11/12/20 (rainfed/herbaceous/tree-shrub/irrigated);
+    # built-up is code 190 (impervious surface). See docs/data_schema.md
+    # and gee_scripts/wetland_transition_structure.js for the full class list.
+    CROPLAND_CODES = {10, 11, 12, 20}
+    BUILTUP_CODE = 190
+
     interval_to_x = {iv: i for i, iv in enumerate(INTERVAL_ORDER)}
     regions_present = [r for r in trans_dfs]
 
@@ -173,9 +188,11 @@ def plot_net_flow_by_interval(trans_dfs: dict[str, pd.DataFrame], out_path: Path
 
     for ax, region in zip(axes, regions_present):
         df = trans_dfs[region].copy()
-        df = df[df["converted_class_name"].str.contains("耕地", na=False) | (df["converted_class_name"] == "不透水面")]
-        df["category"] = df["converted_class_name"].apply(
-            lambda name: "Cropland" if "耕地" in name else "Built-up"
+        is_cropland = df["converted_class_code"].isin(CROPLAND_CODES)
+        is_builtup = df["converted_class_code"] == BUILTUP_CODE
+        df = df[is_cropland | is_builtup]
+        df["category"] = df["converted_class_code"].apply(
+            lambda code: "Cropland" if code in CROPLAND_CODES else "Built-up"
         )
 
         pivot = df.groupby(["interval", "direction", "category"])["area_km2"].sum().reset_index()
