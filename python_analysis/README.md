@@ -13,6 +13,12 @@ Python 统计分析与可视化代码，接在 `gee_scripts/` 导出的CSV之后
 - [x] `src/six_category_area_stats.py`（口径对齐版：湿地判断用181-187地类代码，按纬度逐行修正面积）
 - [x] `src/cross_validation.py`（六类图 vs 转移矩阵交叉验证，同时保留"剔除水体"和"全类别"两个版本的对比）
 - [x] `src/plotting.py`（统一PALETTE配色，覆盖4张核心图：区域趋势、命运分组、六类图、净流量）
+- [x] `src/sensor_switch_check.py`（2013 Landsat传感器切换初步诊断，探索性筛查非正式统计检验，结果见`methodology_notes.md`"第四轮：真实数据验证"）
+- [x] `src/data_diagnostics.py`（端元年际稳定性图 + 回退年份使用统计 + 动态/固定FVC一致性检查，三项探索性筛查）
+- [x] `src/report_comparison.py`（自动化"报告数值 vs 真实pipeline结果"比对，把此前手动核对的过程变成可复现脚本，报告数值硬编码自3.1节表格）
+- [x] `src/endmember_behavior_check.py`（端元数值年际波动/相关性诊断，GBA异常排查Level 2，配合debugging budget原则——做不出结论就标记unresolved转向优先级更高的YRD传感器问题）
+- [x] `src/endmember_method_sensitivity.py`（真正的动态端元vs固定端元敏感性实验，隔离mask效应，输出三区域robust/sensitive/unstable分类，分类标准显式写在代码里可复核）
+- [x] `src/mask_divergence_multi_indicator.py`（GBA动态/固定掩膜FVC分歧发现的后续验证：把同样的检查扩展到EVI/NDMI，判断分歧是三指数同步、还是FVC独有）
 - [ ] 四象限图（面积×质量）——需要额外的城市级数据拼表逻辑，`data_loader.py`目前还没接入
 - [ ] BNU独立端元对比图——对比的是第三方数据集，不是`gee_scripts/`的产出，不适合套用现有的`load_csv()`模式
 - [ ] `tests/`——目前只做过用合成假数据的手动冒烟测试（确认逻辑跑得通、边界情况不崩溃），没有正式的pytest用例
@@ -20,16 +26,21 @@ Python 统计分析与可视化代码，接在 `gee_scripts/` 导出的CSV之后
 5个核心脚本已经用结构正确的合成数据实际跑通过（不是只做了语法检查），包括故意测试了
 "部分产品文件缺失"这种情况下`plotting.py`是否会优雅跳过而不是整体崩溃——结果符合预期。
 
-**尚未做的验证**：还没有拿`gee_scripts/`真实导出的CSV跑过——因为`outputs/`目前还是空的
-（GEE导出任务还没有真正跑到完成并review进仓库）。等`outputs/`里有真实数据后，需要重新跑一遍
-这几个脚本，确认真实数据的列名、取值范围跟`docs/data_schema.md`里的预期一致（尤其是
-`City_FVC_8Nodes.csv`这类列名有不确定性的产出，见`data_schema.md`里的具体标注）。
+**验证进展（2026-08-17）**：YRD/GBA/BTH三区域的`{region}_Indices_36Years.csv`已成功从GEE导出，
+`trend_analysis.py`用真实数据跑通，结果与团队正式研究报告的Sen's slope/Mann-Kendall结论几乎完全
+一致（6组区域×分段检验，5组p值精确到小数点后三位吻合）——这是本轮GitHub重写工作第一次真正意义上
+的端到端验证成功。其余产出（TrendClass/SixCategory/FateGroup等）仍在GEE导出队列中，部分因配额
+限制导出失败，尚未验证。
 
 ## 依赖
 
 ```bash
 pip install -r requirements.txt
 ```
+
+## ⚠️ 在Colab里跑，不要用`import`
+
+Colab每次新notebook/新session都是全新环境，`sys.path`里没有本地文件，`import trend_analysis`这类写法会报`ModuleNotFoundError`——这个坑已经踩过至少两次了。正确做法：**把对应脚本的完整代码内容复制粘贴进Colab代码块直接运行**，不要import。如果确实想用import，需要先把整个文件内容写入Colab本地文件系统（比如用`%%writefile`），这个更麻烦，不推荐。
 
 ## 用法
 

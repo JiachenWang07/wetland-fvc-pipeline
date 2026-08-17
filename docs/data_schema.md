@@ -28,7 +28,7 @@ One row per year (1985–2020, 36 rows). Regional means at `REGIONAL_SCALE` (500
 ### `{region}_City_FVC_8Nodes.csv`
 One row per city × 8 node years (1985/1990/.../2020). Scale `CITY_SCALE` (30m).
 
-⚠️ **Column naming uncertainty, flagged rather than guessed**: historical Python analysis code (reading CSVs from an earlier version of the GEE export scripts) confirms those older exports had a literal column named `mean`, not `FVC` — the band apparently was not renamed before `reduceRegions()` in that earlier code, and downstream Python explicitly did `.rename(columns={'mean': 'FVC'})`. The **current rewritten** `fvc_dynamic_endmember.js` names the band `FVC` before calling `reduceRegions()`, which is expected to carry through as the output column name — but this has not been confirmed by an actual completed run (see the "not yet run to completion" note at the end of this document). Treat the column name below as the intended design, not a verified fact.
+✅ **Column naming — confirmed, not just expected**: `ee.Image.reduceRegions()` outputs the reducer's own name (`mean`), not the input band's name (`FVC`), **even when the band is explicitly renamed to `FVC` before the call** — this was verified against real output from the rewritten `fvc_dynamic_endmember.js` (2026-08-17: both `YRD_City_FVC_8Nodes.csv` and `GBA_City_FVC_8Nodes.csv` have a literal `mean` column, not `FVC`). Downstream Python code must rename it explicitly (`.rename(columns={'mean': 'FVC'})`), matching the pattern already used in historical analysis scripts for the equivalent table.
 
 | Column (intended) | Type | Description |
 |---|---|---|
@@ -54,7 +54,7 @@ One row per year (1985–2020). Uses the region's fixed endmember pair instead o
 | `FVC_FixedEndmember_Pixel` | float [0,1] | Region-mean FVC computed with the fixed endmember |
 
 ### `{region}_City_FixedFVC_8Nodes.csv`
-Same shape as `{region}_City_FVC_8Nodes.csv` above, but the FVC column is computed with the fixed endmember pair instead of the dynamic one. Same column-naming caveat applies — the current code names the band `FVC_Fixed` before `reduceRegions()`, but this is unverified against an actual run; historical scripts for the equivalent table used a literal `mean` column with a separate rename step in Python.
+Same shape as `{region}_City_FVC_8Nodes.csv` above, but the FVC column is computed with the fixed endmember pair instead of the dynamic one. Same confirmed column-naming behavior applies — the code names the band `FVC_Fixed` before `reduceRegions()`, but the actual output column will be `mean` (verified pattern, see above); rename explicitly downstream.
 
 ---
 
@@ -119,7 +119,7 @@ One row per (interval × direction × land-cover class actually observed) — ro
 ### `{region}_City_WetlandArea_8Nodes.csv`
 One row per city × 8 node years.
 
-Same column-naming caveat as above: the current code names the band `wetland_area_km2` before `reduceRegions()`, but this is unverified against an actual run; the equivalent historical table used a literal `sum` column.
+Same confirmed column-naming behavior as above: the code names the band `wetland_area_km2` before `reduceRegions()`, but the actual output column will be `sum` (the pattern is verified for `reduceRegions()` generally, not yet independently re-confirmed for this specific export, but there is no reason to expect it to behave differently).
 
 | Column (intended) | Type | Description |
 |---|---|---|
