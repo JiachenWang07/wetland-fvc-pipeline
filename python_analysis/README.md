@@ -43,7 +43,7 @@ Colab每次新notebook/新session都是全新环境，`sys.path`里没有本地�
 
 ## 用法
 
-每个脚本可以独立运行（假设`../outputs/`里已经有对应的CSV/TIF文件）：
+每个脚本可以独立运行（假设仓库根目录的`outputs/`里已经有对应的CSV/TIF文件——**不是**`python_analysis/outputs/`，是仓库最外层那个`outputs/`，参见`data_loader.py`里`DEFAULT_DATA_DIR`的实际解析结果）：
 
 ```bash
 cd src/
@@ -53,5 +53,4 @@ python cross_validation.py
 python plotting.py
 ```
 
-默认从`../outputs/`读取数据，可以用环境变量`WETLAND_DATA_DIR`指向别的目录（比如GEE导出后
-还没review进`outputs/`之前的本地临时目录）。
+默认读取路径是仓库根目录下的`outputs/`（不随你`cd`到`src/`而改变，`data_loader.py`内部用的是基于脚本文件自身位置往上三层解析出来的固定路径，不是当前工作目录的相对路径），可以用环境变量`WETLAND_DATA_DIR`指向别的目录（比如GEE导出后还没review进`outputs/`之前的本地临时目录）。
