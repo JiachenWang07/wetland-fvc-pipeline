@@ -120,7 +120,7 @@ Full log 完整调试记录见 [`docs/methodology_notes.md`](docs/methodology_no
 - Sen's slope + Mann-Kendall trend results reproduce the team's original report to within numerical tolerance (6/6 region×period combinations, matching direction and p-value)
 - YRD's fixed-endmember FVC export is numerically identical to a from-scratch rerun to floating-point precision (max difference ~2×10⁻¹⁶)
 - Dynamic-vs-fixed endmember method sensitivity was investigated end-to-end (design validated by independent code-path audit, results independently re-derived) and closed with an explicit robust/sensitive/unstable classification per region — see [`methodology_notes.md`](docs/methodology_notes.md)
-- The raster-based six-category area statistics (`python_analysis/src/six_category_area_stats.py`) were validated against historical reference results for **all three regions**, matching to floating-point precision (~10⁻⁷ km² absolute difference)
+- The raster-based six-category area statistics (`python_analysis/src/six_category_area_stats.py`) were validated against historical reference results for **all three regions**. The original in-memory comparisons differed only at floating-point scale (~10⁻⁷–10⁻⁶ km²); after serialization at the precision of the reviewed public CSV, all 18 published values match exactly (`max abs_difference_km2 = 0.0`).
 
 Full validation history, including investigations that were closed as *inconclusive* or where an initial hypothesis was tested and disproven, is documented in [`docs/methodology_notes.md`](docs/methodology_notes.md) rather than only reporting the results that confirmed expectations.
 
@@ -129,7 +129,7 @@ Full validation history, including investigations that were closed as *inconclus
 - Sen's slope + Mann-Kendall趋势结果在数值容差内复现了团队原始报告（6/6区域×时段组合，方向和p值均一致）
 - YRD的固定端元FVC导出与从头重新计算的结果在浮点精度上完全一致（最大差约2×10⁻¹⁶）
 - 动态vs固定端元方法敏感性做过端到端调查（比较设计经独立代码审计确认有效，结果经独立复算），并给出了明确的区域级robust/sensitive/unstable分类后关闭调查——详见 [`methodology_notes.md`](docs/methodology_notes.md)
-- 基于栅格的六类面积统计（`python_analysis/src/six_category_area_stats.py`）已针对**三个区域全部**跟历史参照结果验证，差异在浮点精度量级（约10⁻⁷ km²绝对差）
+- 基于栅格的六类面积统计（`python_analysis/src/six_category_area_stats.py`）已针对**三个区域全部**与历史参照结果完成验证。原始内存计算仅存在约10⁻⁷–10⁻⁶ km²量级的浮点差异；按当前公开CSV精度序列化后，18个发布值全部一致（`max abs_difference_km2 = 0.0`）。
 
 完整验证历史（包括被关闭为"无法定论"、或假说被提出后经验证推翻的调查）记录在 [`docs/methodology_notes.md`](docs/methodology_notes.md)，不是只报告符合预期的结果。
 

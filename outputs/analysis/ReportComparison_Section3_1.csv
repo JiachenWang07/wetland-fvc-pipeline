@@ -1,0 +1,7 @@
+region,period,direction,p_value,p_is_upper_bound,live_direction,live_p_value,live_sen_slope,direction_match,p_value_consistent
+YRD,1985-2005,decreasing,0.004,False,decreasing,0.0041215262651426166,-0.003959568880237962,True,True
+YRD,2005-2020,increasing,0.001,True,increasing,1.8931051599002657e-05,0.006900143369889597,True,True
+GBA,1985-2005,no trend,0.075,False,no trend,0.08521008299376032,-0.00507553816161529,True,True
+GBA,2005-2020,increasing,0.003,False,increasing,0.0025570393769516198,0.004739693505269719,True,True
+BTH,1985-2005,decreasing,0.002,False,decreasing,0.001520842420702273,-0.0053335130165846865,True,True
+BTH,2005-2020,no trend,0.753,False,no trend,0.7526419827681854,-0.0004584086878077165,True,True

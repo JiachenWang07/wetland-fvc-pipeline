@@ -139,14 +139,14 @@ def switch_year_jump(merged: pd.DataFrame) -> dict:
 def classify_region(metrics: dict, trends: pd.DataFrame) -> tuple[str, str]:
     """Explicit classification criteria:
 
-    🔴 unstable — trend DIRECTION or significance differs between the two
-       methods in either segment (this would mean the reported conclusion
-       itself depends on which endmember method was used).
-    🟡 sensitive — trend direction/significance agree, but absolute
-       divergence is notable: MAE > 0.015, OR more than 1/3 of years
-       (12/36) exceed the 0.03 threshold.
-    🟢 robust — trend direction/significance agree AND absolute
-       divergence is small by both criteria above.
+    🔴 unstable — Sen-slope SIGN differs between the two methods in
+       either segment (the qualitative trend direction depends on the
+       endmember method).
+    🟡 sensitive — Sen-slope signs agree, but significance differs in at
+       least one segment, OR absolute divergence is notable: MAE > 0.015,
+       OR more than 1/3 of years (12/36) exceed the 0.03 threshold.
+    🟢 robust — Sen-slope signs and significance agree across both
+       segments AND absolute divergence is small by both criteria above.
 
     These thresholds are stated explicitly here so the classification is
     reproducible and can be argued with, not just asserted.
@@ -157,10 +157,28 @@ def classify_region(metrics: dict, trends: pd.DataFrame) -> tuple[str, str]:
         fixed_row = period_rows[period_rows["method"] == "FixedEndmember"]
         if dynamic_row.empty or fixed_row.empty:
             continue
-        if dynamic_row["trend"].iloc[0] != fixed_row["trend"].iloc[0]:
-            return "unstable", f"Trend direction differs in {period}: Dynamic={dynamic_row['trend'].iloc[0]}, FixedEndmember={fixed_row['trend'].iloc[0]}"
+        dynamic_slope = float(dynamic_row["sen_slope"].iloc[0])
+        fixed_slope = float(fixed_row["sen_slope"].iloc[0])
+
+        # Trend direction is defined by the sign of Sen's slope, not by
+        # pymannkendall's "trend" label. The latter becomes "no trend"
+        # whenever a result is non-significant and therefore conflates
+        # direction with significance.
+        if np.sign(dynamic_slope) != np.sign(fixed_slope):
+            return (
+                "unstable",
+                f"Slope sign differs in {period}: "
+                f"Dynamic sen_slope={dynamic_slope:.6f}, "
+                f"FixedEndmember sen_slope={fixed_slope:.6f}",
+            )
+
         if dynamic_row["significant"].iloc[0] != fixed_row["significant"].iloc[0]:
-            return "unstable", f"Significance differs in {period}: Dynamic={dynamic_row['significant'].iloc[0]}, FixedEndmember={fixed_row['significant'].iloc[0]}"
+            return (
+                "sensitive",
+                f"Slope sign agrees in {period}, but significance status differs: "
+                f"Dynamic={dynamic_row['significant'].iloc[0]}, "
+                f"FixedEndmember={fixed_row['significant'].iloc[0]}",
+            )
 
     if metrics["mae"] > 0.015 or metrics["n_years_over_0.03"] > 12:
         return "sensitive", f"Trends agree, but MAE={metrics['mae']:.4f} and/or {metrics['n_years_over_0.03']}/36 years exceed 0.03 divergence"

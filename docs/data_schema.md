@@ -147,4 +147,6 @@ One row per (snapshot year × wetland subtype) — 3 years × 7 subtypes = 21 ro
 
 ## Not Yet Reviewed / Committed
 
-No file above has been run to completion and reviewed into `outputs/` yet — the GEE scripts submit export tasks, but "submitted" is not the same as "succeeded" (see [`limitations.md`](limitations.md)). Once reviewed CSVs are added, this document should be checked against the actual files, not just the export code.
+The schemas documented above have mixed validation status. Several core products have now been run on real data, reviewed, and published under `outputs/`, including all three `{region}_Indices_36Years.csv` files and the fixed-endmember regional time series used by the downstream analyses. Their actual published schemas should be treated as the authoritative reference.
+
+Other GEE exports documented here remain code-derived schemas only: task submission does not imply successful execution or real-data validation. See [`../outputs/README.md`](../outputs/README.md) for the published evidence set and [`limitations.md`](limitations.md) for product-specific validation status.
