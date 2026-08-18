@@ -59,3 +59,15 @@ python plotting.py
 ```
 
 默认读取路径是仓库根目录下的`outputs/`（不随你`cd`到`src/`而改变，`data_loader.py`内部用的是基于脚本文件自身位置往上三层解析出来的固定路径，不是当前工作目录的相对路径），可以用环境变量`WETLAND_DATA_DIR`指向别的目录（比如GEE导出后还没review进`outputs/`之前的本地临时目录）。
+
+### Published evidence workflow
+
+The reviewed release inputs included in this repository are stored under `<repo>/outputs/core/`. To reproduce analyses directly from the published evidence set, set `WETLAND_DATA_DIR` explicitly.
+
+```bash
+cd python_analysis/src
+WETLAND_DATA_DIR=../../outputs/core python trend_analysis.py
+```
+
+Scripts that consume the same regional core CSVs can use the same `WETLAND_DATA_DIR=../../outputs/core` prefix. The files in `outputs/core/` are processed GEE outputs, not raw Landsat/GLC data.
+

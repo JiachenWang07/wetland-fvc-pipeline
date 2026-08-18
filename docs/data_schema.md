@@ -150,3 +150,10 @@ One row per (snapshot year × wetland subtype) — 3 years × 7 subtypes = 21 ro
 The schemas documented above have mixed validation status. Several core products have now been run on real data, reviewed, and published under `outputs/`, including all three `{region}_Indices_36Years.csv` files and the fixed-endmember regional time series used by the downstream analyses. Their actual published schemas should be treated as the authoritative reference.
 
 Other GEE exports documented here remain code-derived schemas only: task submission does not imply successful execution or real-data validation. See [`../outputs/README.md`](../outputs/README.md) for the published evidence set and [`limitations.md`](limitations.md) for product-specific validation status.
+
+## Current publication / validation status
+
+This document covers products with mixed validation status. A curated set of reviewed real-data outputs is now published under [`../outputs/`](../outputs/), including the regional 36-year index series and fixed-endmember inputs used by the downstream Python analyses. For those published products, the CSV files in `outputs/` are the authoritative evidence for the release.
+
+Other GEE products described in this document may still have schemas derived from the current export implementation without completed real-data validation. Defining or submitting an Export task does not by itself imply successful execution or validation. See [`../outputs/README.md`](../outputs/README.md) and [`limitations.md`](limitations.md) for current status.
+

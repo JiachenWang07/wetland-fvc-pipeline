@@ -53,7 +53,15 @@ def load_and_merge(region: str, data_dir: Path | str) -> pd.DataFrame | None:
     if dynamic_df is None:
         return None
 
-    fixed_path = Path(data_dir) / f"{region}_FVC_FixedEndmember_PixelLevel_v4.csv"
+    canonical_fixed_path = data_dir / f"{region}_FVC_FixedEndmember_PixelLevel.csv"
+    legacy_fixed_path = data_dir / f"{region}_FVC_FixedEndmember_PixelLevel_v4.csv"
+
+    if canonical_fixed_path.exists():
+        fixed_path = canonical_fixed_path
+    elif legacy_fixed_path.exists():
+        fixed_path = legacy_fixed_path
+    else:
+        fixed_path = canonical_fixed_path
     if not fixed_path.exists():
         print(f"[WARN] {region}: missing {fixed_path}")
         return None
