@@ -74,13 +74,28 @@ Install dependencies:
 pip install -r python_analysis/requirements.txt
 ```
 
-Published-evidence workflow (reviewed CSVs already in this repository). From the repository root:
+### Reproducible from the public repository
+
+The published `outputs/core/` CSVs are sufficient to rerun:
+
+- `trend_analysis.py`
+- regional Sen's slope / Mann–Kendall analysis
+- `report_comparison.py` and the documented 6/6 comparison
+- the FVC-trend portion of `plotting.py`
+
+From the repository root:
 
 ```bash
 WETLAND_DATA_DIR=outputs/core python python_analysis/src/trend_analysis.py
 ```
 
-Script-specific working directories, additional analyses, and the `WETLAND_DATA_DIR=../../outputs/core` form used from `python_analysis/src/` are documented in [`python_analysis/README.md`](python_analysis/README.md).
+Not every Python script can run from `outputs/core/` alone. Script-specific working directories, additional analyses, and the `WETLAND_DATA_DIR=../../outputs/core` form used from `python_analysis/src/` are documented in [`python_analysis/README.md`](python_analysis/README.md).
+
+### Requires additional upstream GEE outputs
+
+- `six_category_area_stats.py` requires the regional GeoTIFF products used by the raster workflow and therefore cannot be recomputed from the public clone alone.
+- `cross_validation.py` requires WetlandTransitionStructure inputs in addition to SixCategory inputs.
+- The repository publishes reviewed validation evidence for those analyses, but not every upstream raster/table required to recompute them from scratch.
 
 ## What went wrong (and what I fixed)
 

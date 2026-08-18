@@ -53,8 +53,44 @@ def transition_net_change(trans_df: pd.DataFrame, exclude_water: bool) -> float:
     return net_in - net_out
 
 
+def _fill_six_category_from_combined(
+    six_cat_dfs: dict[str, pd.DataFrame],
+    data_dir: Path | str,
+) -> dict[str, pd.DataFrame]:
+    """Fill regions missing a per-region `{region}_SixCategory_AreaStats.csv`
+    from the combined `SixCategory_AreaStats.csv` written by
+    six_category_area_stats.py. Per-region files already in six_cat_dfs win.
+    """
+    missing = [region for region in REGIONS if region not in six_cat_dfs]
+    if not missing:
+        return six_cat_dfs
+
+    combined_path = Path(data_dir) / "SixCategory_AreaStats.csv"
+    if not combined_path.exists():
+        return six_cat_dfs
+
+    combined = pd.read_csv(combined_path)
+    required = {"region", "class_label", "area_km2"}
+    if not required.issubset(combined.columns):
+        print(
+            f"[WARN] Combined six-category file missing required columns "
+            f"{sorted(required)}: {combined_path}"
+        )
+        return six_cat_dfs
+
+    print(f"[OK] Loaded combined six-category fallback: {combined_path} ({len(combined)} rows)")
+    for region in missing:
+        subset = combined[combined["region"] == region]
+        if subset.empty:
+            continue
+        six_cat_dfs[region] = subset.copy()
+        print(f"[OK] Using combined SixCategory_AreaStats.csv for {region}: {len(subset)} rows")
+    return six_cat_dfs
+
+
 def main(data_dir: Path | str = DEFAULT_DATA_DIR) -> pd.DataFrame:
     six_cat_dfs = load_all_regions("six_category_area_stats", data_dir)
+    six_cat_dfs = _fill_six_category_from_combined(six_cat_dfs, data_dir)
     trans_dfs = load_all_regions("transition_structure", data_dir)
 
     rows = []
