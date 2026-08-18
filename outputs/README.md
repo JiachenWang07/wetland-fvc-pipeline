@@ -1,12 +1,14 @@
 # outputs/
 
-Reviewed validation evidence published from this project. This is not the full set of approximately 42 GEE export tasks that `gee_scripts/` can produce. Raw and intermediate rasters remain on Google Drive and are not part of this repository.
+Reviewed validation evidence published from this project. This is not the full set of approximately 42 GEE export tasks that `gee_scripts/` can produce. Raw Landsat/GLC source rasters and workflow GeoTIFF exports remain on Google Drive and are not distributed in Git.
+
+Published files here fall into two roles: **core inputs** that a fresh clone can use to rerun the documented trend-analysis path, and **analysis/validation evidence** (reviewed derived tables). The latter are not a substitute for every upstream raster or GEE table needed to recompute those results from scratch.
 
 ---
 
-## core/ — Core processed outputs used by downstream Python analyses
+## core/ — Published regional core CSVs (trend-analysis inputs)
 
-These are not raw Landsat/GLC data. They are GEE-side aggregated outputs (region-level 36-year FVC/EVI/NDMI time series) that analyses in `analysis/` and `validation/` are computed from.
+These are reviewed GEE-side aggregated CSV products, not raw Landsat/GLC data: region-level 36-year FVC/EVI/NDMI time series plus fixed-endmember region means. They are sufficient for the publicly reproducible trend-analysis workflow documented in [`../README.md`](../README.md) (`trend_analysis.py`, `report_comparison.py`, and the FVC-trend portion of `plotting.py`). They do not include the GeoTIFFs or WetlandTransitionStructure tables required by `six_category_area_stats.py` and `cross_validation.py`.
 
 | File | Source script | Content |
 | --- | --- | --- |
@@ -17,7 +19,9 @@ Field definitions: [`../docs/data_schema.md`](../docs/data_schema.md).
 
 ---
 
-## analysis/ — Core research results
+## analysis/ — Reviewed derived results (not a complete upstream archive)
+
+Tables in this directory are reviewed analysis outputs computed during the project workflow. Their presence does **not** mean that every upstream raster or GEE export needed to regenerate them from scratch is included in this repository.
 
 | File | Source script | Content | `methodology_notes.md` | Known limitations |
 | --- | --- | --- | --- | --- |
@@ -26,7 +30,9 @@ Field definitions: [`../docs/data_schema.md`](../docs/data_schema.md).
 
 ---
 
-## validation/ — Reproduction and reference-comparison evidence
+## validation/ — Reviewed validation evidence
+
+These CSVs document checks already performed on the reviewed workflow. They are evidence of those comparisons, not a claim that a fresh public clone contains every input required to repeat every check from raw GEE exports. In particular, `six_category_validation.csv` records the 18/18 (max `abs_difference_km2` = 0.0 km²) raster-vs-reference comparison; the GeoTIFF inputs used to compute the Python side of that check are not in Git.
 
 | File | Source | Content | `methodology_notes.md` | Known limitations |
 | --- | --- | --- | --- | --- |
@@ -36,10 +42,19 @@ Field definitions: [`../docs/data_schema.md`](../docs/data_schema.md).
 
 **Note on `six_category_validation.csv` scope:** `gee_scripts/trend_classification.js` also exports a GEE-side `{region}_SixCategory_AreaStats` product, computed server-side rather than by the local Python raster pipeline this validation file covers. Whether the GEE-side and Python-side six-category numbers agree with each other has not yet been checked — that would be a separate, currently unperformed cross-check, not something this file demonstrates.
 
+### Cross-validation inputs (not in `core/`)
+
+`python_analysis/src/cross_validation.py` is not runnable from `outputs/core/` alone. It needs regional `{region}_WetlandTransitionStructure.csv` files plus SixCategory area stats as either:
+
+- per-region `{region}_SixCategory_AreaStats.csv` (legacy / GEE filename), or
+- combined `SixCategory_AreaStats.csv` (the file written by `six_category_area_stats.py`; v1.0.1 adds a compatibility fallback that filters this table by the `region` column)
+
+`six_category_area_stats.py` itself needs four GeoTIFFs per region (`{region}_RawLandCover_1985.tif`, `{region}_RawLandCover_2020.tif`, `{region}_FVC_2020_30m.tif`, `{region}_FVC_TrendClass_5Level.tif`). Those rasters are not distributed in Git.
+
 ---
 
 ## Why not all ~42 GEE products
 
 1. Some products have not completed real-data validation yet (e.g. `FateGroup_FVC` currently has partial regional coverage; `WetlandTransitionStructure` is affected by a known code issue — see [`../docs/limitations.md`](../docs/limitations.md)). Unvalidated products are not published here.
 2. Intermediate diagnostics are not conclusion evidence. Exploratory CSVs generated during debugging are recorded in [`../docs/methodology_notes.md`](../docs/methodology_notes.md) rather than kept as standalone files here.
-3. Raw rasters and large files are excluded by `.gitignore` and kept on Google Drive; this directory holds only small aggregated CSVs.
+3. Raw/intermediate rasters and other large files are excluded by `.gitignore` and kept on Google Drive. This directory holds only small aggregated CSVs. That is a distribution choice: `six_category_area_stats.py` therefore cannot be recomputed from the public clone without those additional GeoTIFF exports.

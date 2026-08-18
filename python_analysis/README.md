@@ -40,7 +40,7 @@ Colab 新 session 的 `sys.path` 没有本仓库本地文件，`import trend_ana
 
 ## 用法
 
-每个脚本可以独立运行。输入默认来自仓库根目录的 `outputs/`（**不是** `python_analysis/outputs/`；参见 `data_loader.py` 里 `DEFAULT_DATA_DIR` 的解析结果）。
+每个脚本可以独立运行，但所需输入并不相同。输入默认来自仓库根目录的 `outputs/`（**不是** `python_analysis/outputs/`；参见 `data_loader.py` 里 `DEFAULT_DATA_DIR` 的解析结果）。哪些脚本能用公开的 `outputs/core/`、哪些还需要额外 GEE 产出，见下面两节。
 
 从**仓库根目录**执行：
 
@@ -54,13 +54,54 @@ python plotting.py
 
 默认读取路径是仓库根目录下的 `outputs/`（不随 `cd` 到 `src/` 而改变；`data_loader.py` 基于脚本文件位置往上三层解析，不是当前工作目录的相对路径）。可用环境变量 `WETLAND_DATA_DIR` 指向别的目录（例如 GEE 导出后尚未 review 进 `outputs/` 的本地临时目录）。
 
-### Published evidence workflow
+## 公开仓库可直接复现
 
-仓库内已审阅的发布输入在 `<repo>/outputs/core/`。要从该证据集复现分析，请显式设置 `WETLAND_DATA_DIR`。
+`<repo>/outputs/core/` 存放已发布的区域核心 CSV（处理后的 GEE 产出，不是原始 Landsat/GLC 数据）。公开 clone 上已验证的流程：
 
 ```bash
 cd python_analysis/src
 WETLAND_DATA_DIR=../../outputs/core python trend_analysis.py
 ```
 
-使用同一套区域核心 CSV 的脚本可以用相同的 `WETLAND_DATA_DIR=../../outputs/core` 前缀。`outputs/core/` 中的文件是处理后的 GEE 产出，不是原始 Landsat/GLC 数据。
+同一套已发布核心 CSV 也足以运行 `report_comparison.py`（文档中的 6/6 比对）。`plotting.py` 可以画出 FVC 趋势图；缺少所需产品的图组会跳过，而不是整次运行失败。
+
+`outputs/core/` **不能**支撑全部 Python 分析。六类面积统计和交叉验证需要额外的上游 GEE 产出，见下一节。
+
+## 需要额外 GEE 产出的分析
+
+### six_category_area_stats.py
+
+每个区域需要以下四个文件：
+
+```text
+{region}_RawLandCover_1985.tif
+{region}_RawLandCover_2020.tif
+{region}_FVC_2020_30m.tif
+{region}_FVC_TrendClass_5Level.tif
+```
+
+这些 GeoTIFF 不随 Git 仓库分发。公开 clone 无法从零重算该栅格流程。
+
+已发布的 [`../outputs/validation/six_category_validation.csv`](../outputs/validation/six_category_validation.csv)（18/18，max difference 0.0 km²）是审阅后的验证证据，不是公开仓库里可再跑一遍栅格计算的输入。
+
+### cross_validation.py
+
+需要：
+
+```text
+{region}_WetlandTransitionStructure.csv
+```
+
+以及下列二者之一：
+
+```text
+{region}_SixCategory_AreaStats.csv
+```
+
+或 `six_category_area_stats.py` 写出的合并表：
+
+```text
+SixCategory_AreaStats.csv
+```
+
+后者由 v1.0.1 的兼容回退支持：若按区域的 `{region}_SixCategory_AreaStats.csv` 不存在，则读取合并表并按 `region` 列筛选。转移矩阵仍只使用按区域的 `WetlandTransitionStructure` 文件。这些表也不在公开的 `outputs/core/` 中。
