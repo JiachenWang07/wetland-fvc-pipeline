@@ -2,7 +2,7 @@
 
 Column-level schema for every product exported by `gee_scripts/`. All exports land in a single Google Drive folder: `Wetland_FVC_Exports`. `{region}` is one of `YRD` / `GBA` / `BTH`.
 
-None of these files are committed to this repository yet — `outputs/` is currently empty (see [`limitations.md`](limitations.md)). This document describes what the GEE scripts are designed to produce, based on the export code itself, not a verified sample.
+Reviewed evidence is published under `outputs/core/`, `outputs/analysis/`, and `outputs/validation/`. This document describes GEE export products; published CSVs are the authoritative schema reference where available.
 
 ---
 
@@ -145,15 +145,7 @@ One row per (snapshot year × wetland subtype) — 3 years × 7 subtypes = 21 ro
 
 ---
 
-## Not Yet Reviewed / Committed
+## Publication / validation status
 
-The schemas documented above have mixed validation status. Several core products have now been run on real data, reviewed, and published under `outputs/`, including all three `{region}_Indices_36Years.csv` files and the fixed-endmember regional time series used by the downstream analyses. Their actual published schemas should be treated as the authoritative reference.
-
-Other GEE exports documented here remain code-derived schemas only: task submission does not imply successful execution or real-data validation. See [`../outputs/README.md`](../outputs/README.md) for the published evidence set and [`limitations.md`](limitations.md) for product-specific validation status.
-
-## Current publication / validation status
-
-This document covers products with mixed validation status. A curated set of reviewed real-data outputs is now published under [`../outputs/`](../outputs/), including the regional 36-year index series and fixed-endmember inputs used by the downstream Python analyses. For those published products, the CSV files in `outputs/` are the authoritative evidence for the release.
-
-Other GEE products described in this document may still have schemas derived from the current export implementation without completed real-data validation. Defining or submitting an Export task does not by itself imply successful execution or validation. See [`../outputs/README.md`](../outputs/README.md) and [`limitations.md`](limitations.md) for current status.
+Published core/analysis/validation CSVs are the authoritative schema reference where available. Other product schemas may still be implementation-derived from GEE export code and not independently validated. See [`../outputs/README.md`](../outputs/README.md) and [`limitations.md`](limitations.md).
 
