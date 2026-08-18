@@ -1,38 +1,32 @@
 # python_analysis/
 
-Python 统计分析与可视化代码，接在 `gee_scripts/` 导出的CSV之后（见根目录README的"How to Run"）。
+Python 统计分析与可视化代码，接在 `gee_scripts/` 导出的 CSV 之后。
 
-独立重新实现版本——参考了4份历史Colab脚本（合计4200多行、含大量试错版本），梳理版本演进关系、
-确认每个产出的最终定版逻辑之后重写，不是直接搬运。演进关系和几处关键修正记录在
-[`../docs/methodology_notes.md`](../docs/methodology_notes.md)（"第三轮：Python历史脚本核实"一节）。
+历史脚本的演进关系和关键修正记录在 [`../docs/methodology_notes.md`](../docs/methodology_notes.md)（「第三轮：Python历史脚本核实」一节）。
 
 ## 状态
 
-- [x] `src/data_loader.py`（公共数据读取基础设施：路径管理、读取容错、端元有效性检查）
-- [x] `src/trend_analysis.py`（Sen's slope + Mann-Kendall，明确区分已弃用的全周期检验和主用的分段检验）
-- [x] `src/six_category_area_stats.py`（口径对齐版：湿地判断用181-187地类代码，按纬度逐行修正面积）
-- [x] `src/cross_validation.py`（六类图 vs 转移矩阵交叉验证，同时保留"剔除水体"和"全类别"两个版本的对比）
-- [x] `src/plotting.py`（统一PALETTE配色，覆盖4张核心图：区域趋势、命运分组、六类图、净流量）
-- [x] `src/sensor_switch_check.py`（2013 Landsat传感器切换初步诊断，探索性筛查非正式统计检验，结果见`methodology_notes.md`"第四轮：真实数据验证"）
-- [x] `src/data_diagnostics.py`（端元年际稳定性图 + 回退年份使用统计 + FVC/EVI/NDMI三指标动态-固定一致性检查，三项探索性筛查）
-- [x] `src/report_comparison.py`（自动化"报告数值 vs 真实pipeline结果"比对，把此前手动核对的过程变成可复现脚本，报告数值硬编码自3.1节表格）
-- [x] `src/endmember_behavior_check.py`（端元数值年际波动/相关性诊断，GBA异常排查Level 2，配合debugging budget原则——做不出结论就标记unresolved转向优先级更高的YRD传感器问题）
-- [x] `src/endmember_method_sensitivity.py`（真正的动态端元vs固定端元敏感性实验，隔离mask效应，输出三区域robust/sensitive/unstable分类，分类标准显式写在代码里可复核）
-- [ ] 四象限图（面积×质量）——需要额外的城市级数据拼表逻辑，`data_loader.py`目前还没接入
-- [ ] BNU独立端元对比图——对比的是第三方数据集，不是`gee_scripts/`的产出，不适合套用现有的`load_csv()`模式
-- [ ] `tests/`——目前只做过用合成假数据的手动冒烟测试（确认逻辑跑得通、边界情况不崩溃），没有正式的pytest用例
+- [x] `src/data_loader.py`（公共数据读取：路径管理、读取容错、端元有效性检查）
+- [x] `src/trend_analysis.py`（Sen's slope + Mann-Kendall；区分已弃用的全周期检验和主用的分段检验）
+- [x] `src/six_category_area_stats.py`（湿地判断用 181–187 地类代码，按纬度逐行修正面积）
+- [x] `src/cross_validation.py`（六类图 vs 转移矩阵交叉验证；保留「剔除水体」和「全类别」两个版本）
+- [x] `src/plotting.py`（统一 PALETTE 配色：区域趋势、命运分组、六类图、净流量）
+- [x] `src/sensor_switch_check.py`（2013 Landsat 传感器切换初步诊断，探索性筛查非正式统计检验；结果见 `methodology_notes.md`「第四轮：真实数据验证」）
+- [x] `src/data_diagnostics.py`（端元年际稳定性图 + 回退年份使用统计 + FVC/EVI/NDMI 动态-固定一致性检查）
+- [x] `src/report_comparison.py`（报告数值 vs pipeline 结果比对；报告数值硬编码自 3.1 节表格）
+- [x] `src/endmember_behavior_check.py`（端元数值年际波动/相关性诊断）
+- [x] `src/endmember_method_sensitivity.py`（动态端元 vs 固定端元敏感性实验，隔离 mask 效应；输出三区域 robust/sensitive/unstable 分类，标准写在代码中）
+- [ ] 四象限图（面积×质量）——需要额外的城市级数据拼表逻辑，`data_loader.py` 目前还没接入
+- [ ] BNU 独立端元对比图——对比的是第三方数据集，不是 `gee_scripts/` 的产出，不适合套用现有的 `load_csv()` 模式
+- [ ] `tests/`——目前只做过用合成假数据的手动冒烟测试，没有正式的 pytest 用例
 
-5个核心脚本已经用结构正确的合成数据实际跑通过（不是只做了语法检查），包括故意测试了
-"部分产品文件缺失"这种情况下`plotting.py`是否会优雅跳过而不是整体崩溃——结果符合预期。
+核心脚本已用结构正确的合成数据跑通，包括部分产品文件缺失时 `plotting.py` 跳过缺失输入而不整体崩溃。
 
-**验证进展**：不只是合成数据测试——`trend_analysis.py`用YRD/GBA/BTH三区域真实GEE导出数据跑通，
-Sen's slope/Mann-Kendall结果与团队正式研究报告6/6组区域×分段检验一致；`six_category_area_stats.py`
-用三区域真实历史栅格验证，6/6类别在浮点精度量级（~10⁻⁷ km²）复现历史参照结果，三区域投资调查均
-已CLOSED。完整验证历史见根目录README的"Validation Status"章节和[`../docs/methodology_notes.md`](../docs/methodology_notes.md)。
+**验证进展**：`trend_analysis.py` 用 YRD/GBA/BTH 三区域真实 GEE 导出数据跑通，Sen's slope/Mann-Kendall 结果与研究报告 6/6 组区域×分段检验一致。`six_category_area_stats.py` 用三区域真实历史栅格验证 18 个已发布的区域×类别数值：内存中的差异为浮点量级（~10⁻⁷–10⁻⁶ km²）；序列化后的公开 CSV 为 18/18 精确匹配，max `abs_difference_km2` = 0.0 km²。三区域该项调查均已 CLOSED。完整验证历史见 [`../docs/methodology_notes.md`](../docs/methodology_notes.md) 与 [`../outputs/README.md`](../outputs/README.md)。
 
 ## 依赖
 
-Python >= 3.10（源码用了`Path | str`这类3.10+才支持的类型标注语法）。
+Python >= 3.10（源码用了 `Path | str` 这类 3.10+ 才支持的类型标注语法）。
 
 从**仓库根目录**执行：
 
@@ -40,13 +34,13 @@ Python >= 3.10（源码用了`Path | str`这类3.10+才支持的类型标注语�
 pip install -r python_analysis/requirements.txt
 ```
 
-## ⚠️ 在Colab里跑，不要用`import`
+## 在 Colab 里跑
 
-Colab每次新notebook/新session都是全新环境，`sys.path`里没有本地文件，`import trend_analysis`这类写法会报`ModuleNotFoundError`——这个坑已经踩过至少两次了。正确做法：**把对应脚本的完整代码内容复制粘贴进Colab代码块直接运行**，不要import。如果确实想用import，需要先把整个文件内容写入Colab本地文件系统（比如用`%%writefile`），这个更麻烦，不推荐。
+Colab 新 session 的 `sys.path` 没有本仓库本地文件，`import trend_analysis` 会报 `ModuleNotFoundError`。做法：把对应脚本的完整代码内容复制粘贴进 Colab 代码块直接运行，不要 import。若要用 import，需先把文件写入 Colab 本地文件系统（例如 `%%writefile`）。
 
 ## 用法
 
-每个脚本可以独立运行（假设仓库根目录的`outputs/`里已经有对应的CSV/TIF文件——**不是**`python_analysis/outputs/`，是仓库最外层那个`outputs/`，参见`data_loader.py`里`DEFAULT_DATA_DIR`的实际解析结果）：
+每个脚本可以独立运行。输入默认来自仓库根目录的 `outputs/`（**不是** `python_analysis/outputs/`；参见 `data_loader.py` 里 `DEFAULT_DATA_DIR` 的解析结果）。
 
 从**仓库根目录**执行：
 
@@ -58,16 +52,15 @@ python cross_validation.py
 python plotting.py
 ```
 
-默认读取路径是仓库根目录下的`outputs/`（不随你`cd`到`src/`而改变，`data_loader.py`内部用的是基于脚本文件自身位置往上三层解析出来的固定路径，不是当前工作目录的相对路径），可以用环境变量`WETLAND_DATA_DIR`指向别的目录（比如GEE导出后还没review进`outputs/`之前的本地临时目录）。
+默认读取路径是仓库根目录下的 `outputs/`（不随 `cd` 到 `src/` 而改变；`data_loader.py` 基于脚本文件位置往上三层解析，不是当前工作目录的相对路径）。可用环境变量 `WETLAND_DATA_DIR` 指向别的目录（例如 GEE 导出后尚未 review 进 `outputs/` 的本地临时目录）。
 
 ### Published evidence workflow
 
-The reviewed release inputs included in this repository are stored under `<repo>/outputs/core/`. To reproduce analyses directly from the published evidence set, set `WETLAND_DATA_DIR` explicitly.
+仓库内已审阅的发布输入在 `<repo>/outputs/core/`。要从该证据集复现分析，请显式设置 `WETLAND_DATA_DIR`。
 
 ```bash
 cd python_analysis/src
 WETLAND_DATA_DIR=../../outputs/core python trend_analysis.py
 ```
 
-Scripts that consume the same regional core CSVs can use the same `WETLAND_DATA_DIR=../../outputs/core` prefix. The files in `outputs/core/` are processed GEE outputs, not raw Landsat/GLC data.
-
+使用同一套区域核心 CSV 的脚本可以用相同的 `WETLAND_DATA_DIR=../../outputs/core` 前缀。`outputs/core/` 中的文件是处理后的 GEE 产出，不是原始 Landsat/GLC 数据。

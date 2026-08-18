@@ -1,150 +1,150 @@
 # wetland-fvc-pipeline
 
-> **EN**: A reproducible geospatial data pipeline for analyzing multi-decadal wetland vegetation-cover change across three Chinese urban agglomerations (1985–2020)
-> **中**：面向长时序遥感数据的可复现地理空间分析管线——三大城市群湿地植被覆盖变化案例（1985–2020）
+A reproducible geospatial pipeline for analyzing long-term wetland vegetation change with Google Earth Engine and Python.
 
-![YRD FVC Trend Classification 1985–2020](docs/assets/yrd_fvc_trend_classification_1985_2020.png)
-*Yangtze River Delta wetland FVC trend classification, 1985–2020 (pixel-level OLS fit).*
+**Case study:** Yangtze River Delta (YRD), Greater Bay Area (GBA), and Beijing–Tianjin–Hebei (BTH), 1985–2020.
 
----
+![YRD FVC trend classification](docs/assets/yrd_fvc_trend_classification_1985_2020.png)
 
-## Background 项目背景
+> 中文简介：这是一个从本科科研中的湿地植被分析工作发展而来的地理空间数据项目，使用 Google Earth Engine 和 Python 处理 1985–2020 年 Landsat 时序数据。仓库主要关注可复现的数据处理、趋势分析和结果验证，而不仅是最终的遥感制图结果。
 
-**EN**: This repository analyzes **Fractional Vegetation Cover (FVC)** change in wetlands across three major Chinese urban agglomerations from 1985–2020, based on Landsat time-series and Google Earth Engine. It originated from an undergraduate research project; the analytical design and implementation here are independently developed.
+## Overview
 
-Study area: Yangtze River Delta (YRD), Greater Bay Area (GBA), Beijing-Tianjin-Hebei (BTH), 1985–2020.
+This project examines Fractional Vegetation Cover (FVC) change in wetlands across three Chinese urban agglomerations: YRD, GBA, and BTH.
 
-**中**：本仓库基于 Landsat 时序影像与 Google Earth Engine，分析 1985–2020 年三大城市群湿地植被覆盖度（FVC）变化。项目起源于一项本科生科研项目，其中的分析思路设计与代码实现均为独立完成。
+The workflow includes:
 
-研究对象：长三角(YRD)、粤港澳大湾区(GBA)、京津冀(BTH) 三大城市群，1985–2020年。
+- Landsat time-series processing in Google Earth Engine
+- dynamic and fixed-endmember FVC estimation
+- wetland fate classification (persistent / gained / lost)
+- Sen's slope and Mann-Kendall trend analysis
+- raster-based area statistics
+- cross-method validation and diagnostic checks
 
-## What This Does 这个仓库解决什么问题
+The project originated from the vegetation-analysis part of an undergraduate research project. This repository contains the independently implemented and validated workflow developed from that work.
 
-- **EN**: Computes region-level dynamic FVC from Landsat time series using a dimidiate pixel model
-  **中**：基于 Landsat 时序影像与二分像元模型，动态计算区域级 FVC（植被覆盖度）
-- **EN**: Independent processing pipelines for 3 regions via a factory-function pattern, preventing cross-region data contamination
-  **中**：多区域（3个城市群）独立处理管线，避免跨区域数据串线（工厂函数架构）
-- **EN**: Wetland fate classification (persistent / gained / lost) + trend testing (Sen's slope + Mann-Kendall)
-  **中**：湿地命运分组（持续/新增/丧失）+ 趋势检验（Sen's slope + Mann-Kendall）
-- **EN**: Cross-method validation (dynamic vs. fixed endmembers; six-category area stats vs. transition matrix)
-  **中**：跨方法交叉验证（动态端元 vs 固定端元、六类图 vs 转移矩阵）
-- **EN**: Built on Google Earth Engine (cloud-scale raster processing) + Python geospatial stack (rasterio, pandas)
-  **中**：基于 Google Earth Engine（云端栅格计算）+ Python 地理空间技术栈（rasterio、pandas）搭建
+## Pipeline
 
-## How to Run 如何运行
-
-**EN**: This is a **two-stage pipeline** — Earth Engine has no local execution mode, so it cannot be run end-to-end with a single command. The stages run in different environments and are connected by Google Drive:
-
-1. **GEE stage (cloud, raster processing)** — Paste [`gee_scripts/run_all_combined.js`](gee_scripts/run_all_combined.js) into the [GEE Code Editor](https://code.earthengine.google.com/) and run it. This submits ~42 export tasks to Google Drive. See [`gee_scripts/README.md`](gee_scripts/README.md) for load order if running the modular files individually instead of the combined bundle.
-   ⚠️ Requires access to an administrative-boundary asset — see [Data & Reproducibility](#data--reproducibility-数据与复现说明) below before running.
-2. **Export stage** — Approve the submitted tasks in the Code Editor's *Tasks* tab. Outputs land in a Google Drive folder named `Wetland_FVC_Exports`.
-3. **Python stage (local/Colab, statistics & figures)** — Download the CSVs from Drive into a local directory (default `<repo>/outputs/`, overridable via the `WETLAND_DATA_DIR` environment variable), install dependencies (`pip install -r python_analysis/requirements.txt`), then run the scripts under `python_analysis/src/`. This stage has been **validated against real GEE-exported data**, not just synthetic test data — see [`python_analysis/README.md`](python_analysis/README.md) for exact per-script status and [Known Limitations](#known-limitations-已知局限) below.
-
-**中**：这是一个**两阶段pipeline**——Earth Engine没有本地执行模式，无法用一条命令端到端跑通。两个阶段运行在不同环境里，通过Google Drive衔接：
-
-1. **GEE阶段（云端，栅格处理）**——把 [`gee_scripts/run_all_combined.js`](gee_scripts/run_all_combined.js) 整份粘贴进 [GEE Code Editor](https://code.earthengine.google.com/) 运行，会提交约42个导出任务到Google Drive。如果想分模块单独加载而不是用合并版，加载顺序见 [`gee_scripts/README.md`](gee_scripts/README.md)。
-   ⚠️ 运行前需要能访问一份行政边界资产——见下方[数据与复现说明](#data--reproducibility-数据与复现说明)。
-2. **导出阶段**——在Code Editor的*Tasks*标签页里逐个批准提交的任务，产出会进入Google Drive上一个叫`Wetland_FVC_Exports`的文件夹。
-3. **Python阶段（本地/Colab，统计与画图）**——把Drive里的CSV下载到本地目录（默认`<repo>/outputs/`，可用环境变量`WETLAND_DATA_DIR`覆盖），安装依赖（`pip install -r python_analysis/requirements.txt`），再跑`python_analysis/src/`下的脚本。这一阶段**已经用真实GEE导出数据验证过**，不只是合成测试数据，具体每个脚本的状态见 [`python_analysis/README.md`](python_analysis/README.md) 和下方[已知局限](#known-limitations-已知局限)。
-
-## Highlights: A Full Debugging & Validation Chain 亮点：一条完整的调试与验证链条
-
-**EN**: The most valuable part of this project isn't the methods used — it's what actually broke in the data pipeline, and how it was diagnosed. Three representative examples:
-
-**中**：这个项目最有价值的部分不是"用了什么方法"，而是数据管道真实出过的问题和排查过程，例如：
-
-- **EN — Architecture fix**: A shared mutable `roi` variable across regions caused cross-region data contamination (the GBA/BTH scripts were actually computing YRD's geographic extent) → resolved by switching to a factory-function pattern for full isolation.
-  **中 — 架构重构**：多区域共享可变 `roi` 变量导致跨区域数据串线（GBA/BTH 脚本实际算的是 YRD 的地理范围）→ 改用工厂函数模式彻底隔离
-
-- **EN — Discrepancy diagnosis**: Six-category area stats diverged from the transition matrix by 1.7–2.2× → suspected cloud-gap noise (falsified) → suspected wetland-definition mismatch (partially falsified) → root cause: the two numbers were never meant to be directly comparable (different statistics) → cross-validation converged to <10% error once compared correctly.
-  **中 — 口径不一致排查**：六类面积统计与转移矩阵结果偏差 1.7–2.2 倍 → 怀疑云缺失噪声（证伪）→ 怀疑湿地判断口径不一致（部分证伪）→ 最终定位为"两个统计量本来就不该直接比较" → 交叉验证误差收敛到 10% 以内
-
-- **EN — Getting the year convention right**: Wetland "lost" pixels were originally measured at the interval's end year with a dynamic mask, which is empty by definition (a lost pixel is no longer wetland at that year) — the group came back empty. A later fix removed the mask but still measured the wrong year, silently describing the new land cover instead of the wetland being lost. The final fix measures "lost" wetland at the year *before* conversion — the only year that answers the actual question. The underlying finding held up after the fix, and if anything came out stronger — this correction did not manufacture the result it now supports.
-  **中 — 年份口径修正**："丧失"湿地最初用带掩膜的转化后年份统计，掩膜下必然为空；后续版本去掉掩膜但年份仍不对，结果能跑但测的是错误的东西（新地类而非原湿地）。最终版改用转化前一年，这是唯一能回答"消失前植被状态如何"的年份。修复后核心结论不仅未被推翻，反而证据更强——这个修正没有制造它所支持的结论。
-
-**EN — Multi-round external review**: Before publishing, the GEE codebase went through four independent code/methodology reviews (general code review, remote-sensing methodology review, and two rounds of software-architecture review). Not every finding was accepted as-is — several were downgraded from "confirmed bug" to "needs empirical validation" after independent verification, and at least one reviewer's specific fix recommendation was rejected as unsuitable for this project's 1985 start date. The full triage (accepted / needs validation / rejected, and why) is in [`docs/methodology_notes.md`](docs/methodology_notes.md).
-**中 — 多轮外部审查**：正式发布前，GEE代码经过了四轮独立审查（通用代码审查、遥感方法学审查、两轮软件架构审查）。不是所有发现都被照单全收——多条建议在独立核实后从"确认bug"降级为"需要实验验证"，至少一条具体修复方案（某审查者建议改用某种替代规范）被判定为不适合本项目从1985年起始的时间跨度而拒绝采纳。完整的采纳/待验证/拒绝清单及理由见 [`docs/methodology_notes.md`](docs/methodology_notes.md)。
-
-Full log 完整调试记录见 [`docs/methodology_notes.md`](docs/methodology_notes.md)。
-
-## Repository Structure 仓库结构
-
-```
-├── gee_scripts/                        # GEE JavaScript — data processing & export (independently re-implemented)
-│   ├── region_pipeline.js              #   Core factory function + shared constants
-│   ├── regions_config.js               #   Region boundaries + pipeline instantiation
-│   ├── fvc_dynamic_endmember.js        #   Primary FVC export (36-year series, city nodes, spatial maps)
-│   ├── fvc_fixed_endmember.js          #   Fixed-endmember sensitivity check
-│   ├── wetland_fate_group.js           #   Persistent / gained / lost wetland FVC
-│   ├── trend_classification.js         #   5-level trend map + six-category area-function map
-│   ├── wetland_transition_structure.js #   Land-cover transition structure + city wetland area
-│   ├── wetland_type_fvc.js             #   FVC by wetland subtype
-│   ├── build_combined.sh               #   Regenerates run_all_combined.js from the files above
-│   └── run_all_combined.js             #   Generated single-paste bundle (not the source of truth)
-│
-├── python_analysis/                    # Python — statistical analysis & visualization
-│   ├── src/
-│   │   ├── data_loader.py              #   Shared CSV/path-loading utilities
-│   │   ├── trend_analysis.py           #   Sen's slope + Mann-Kendall (regional, segmented)
-│   │   ├── six_category_area_stats.py  #   Offline raster computation, area-aligned final version
-│   │   ├── cross_validation.py         #   Six-category vs. transition-matrix cross-check
-│   │   └── plotting.py                 #   Unified-palette figure generation
-│   └── requirements.txt
-│
-├── outputs/                            # De-identified aggregated CSV results (no raw pixel/raster data)
-│
-├── report/                             # Whether to include the full report is undecided — see report/README.md
-│
-└── docs/
-    ├── methodology_notes.md            # Full methodology, debugging log, and external-review triage
-    ├── architecture.md                 # Data-flow diagram and pipeline design rationale
-    ├── data_schema.md                  # Column-level schema for every exported CSV/raster product
-    ├── limitations.md                  # Known limitations, including unresolved items from external review
-    └── assets/                         # Figures referenced in this README
+```text
+Landsat + GLC_FCS30D
+        │
+        ▼
+Google Earth Engine
+  ├─ Landsat preprocessing
+  ├─ NDVI / EVI / NDMI
+  ├─ FVC estimation
+  ├─ wetland masks
+  └─ spatial exports
+        │
+        ▼
+   Google Drive
+        │
+        ▼
+      Python
+  ├─ Sen's slope
+  ├─ Mann-Kendall
+  ├─ six-category statistics
+  ├─ sensitivity analysis
+  └─ validation / figures
 ```
 
-## Data & Reproducibility 数据与复现说明
+Earth Engine runs server-side, so the GEE and Python stages are connected through exported files rather than a local subprocess.
 
-**EN**: This repo does **not** include raw data. Landsat and GLC_FCS30D are public datasets with their own usage terms — code references them, but data itself must be obtained from official sources / GEE. `outputs/` contains only de-identified, region-level aggregated CSVs, no raw pixel-level data.
+Each study region is instantiated through `makeRegionPipeline(roi, startMonth, endMonth)`, which keeps regional state isolated while reusing the same processing logic.
 
-⚠️ **Known gap**: the administrative-boundary source (`china` in `gee_scripts/regions_config.js`) is currently a private GEE asset under this project's own account, and will not be accessible if you clone this repo and try to run the scripts as-is. See the warning comment at the top of `regions_config.js` for how to reconstruct it from public sources. This is documented rather than hidden — the pipeline logic itself is reproducible, the boundary data source is the part that currently isn't self-contained.
+## Running the project
 
-**中**：本仓库**不包含原始数据**（Landsat、GLC_FCS30D 均为有使用条款的公开数据集），代码中会说明数据来源，需自行在 GEE / 官方渠道获取。`outputs/` 中的 CSV 是脱敏后的区域级聚合结果，不含原始像元级数据。
+### 1. Google Earth Engine
 
-⚠️ **已知缺口**：行政边界数据源（`gee_scripts/regions_config.js`里的`china`）目前指向本人私有GEE资产，clone本仓库后直接运行会因权限问题失败，`regions_config.js`文件顶部有详细的重建说明。这个问题选择如实标注而不是隐藏——pipeline的逻辑本身是可复现的，边界数据源这一环目前还不是开箱即用的。
+Run [`gee_scripts/run_all_combined.js`](gee_scripts/run_all_combined.js) in the Earth Engine Code Editor. This is the recommended combined entry script and currently creates approximately 42 export tasks.
 
-## Validation Status 验证状态
+A modular alternative (load scripts in order) is documented in [`gee_scripts/README.md`](gee_scripts/README.md).
 
-**EN**: Beyond "the code runs," several parts of this pipeline have been validated against real exported data or independent recomputation:
-- Three regions' 36-year FVC/EVI/NDMI time series successfully exported and loaded
-- Sen's slope + Mann-Kendall trend results reproduce the team's original report to within numerical tolerance (6/6 region×period combinations, matching direction and p-value)
-- YRD's fixed-endmember FVC export is numerically identical to a from-scratch rerun to floating-point precision (max difference ~2×10⁻¹⁶)
-- Dynamic-vs-fixed endmember method sensitivity was investigated end-to-end (design validated by independent code-path audit, results independently re-derived) and closed with an explicit robust/sensitive/unstable classification per region — see [`methodology_notes.md`](docs/methodology_notes.md)
-- The raster-based six-category area statistics (`python_analysis/src/six_category_area_stats.py`) were validated against historical reference results for **all three regions**. The original in-memory comparisons differed only at floating-point scale (~10⁻⁷–10⁻⁶ km²); after serialization at the precision of the reviewed public CSV, all 18 published values match exactly (`max abs_difference_km2 = 0.0`).
+The region-construction module depends on a private administrative-boundary asset. See [`gee_scripts/README.md`](gee_scripts/README.md) and [`docs/limitations.md`](docs/limitations.md).
 
-Full validation history, including investigations that were closed as *inconclusive* or where an initial hypothesis was tested and disproven, is documented in [`docs/methodology_notes.md`](docs/methodology_notes.md) rather than only reporting the results that confirmed expectations.
+### 2. Export
 
-**中**：不只是"代码能跑"——这个pipeline的多个部分已经用真实导出数据或独立复算验证过：
-- 三区域36年FVC/EVI/NDMI时间序列成功导出并加载
-- Sen's slope + Mann-Kendall趋势结果在数值容差内复现了团队原始报告（6/6区域×时段组合，方向和p值均一致）
-- YRD的固定端元FVC导出与从头重新计算的结果在浮点精度上完全一致（最大差约2×10⁻¹⁶）
-- 动态vs固定端元方法敏感性做过端到端调查（比较设计经独立代码审计确认有效，结果经独立复算），并给出了明确的区域级robust/sensitive/unstable分类后关闭调查——详见 [`methodology_notes.md`](docs/methodology_notes.md)
-- 基于栅格的六类面积统计（`python_analysis/src/six_category_area_stats.py`）已针对**三个区域全部**与历史参照结果完成验证。原始内存计算仅存在约10⁻⁷–10⁻⁶ km²量级的浮点差异；按当前公开CSV精度序列化后，18个发布值全部一致（`max abs_difference_km2 = 0.0`）。
+Approve the generated tasks in the GEE Tasks tab. Exports go to the Google Drive folder `Wetland_FVC_Exports`.
 
-完整验证历史（包括被关闭为"无法定论"、或假说被提出后经验证推翻的调查）记录在 [`docs/methodology_notes.md`](docs/methodology_notes.md)，不是只报告符合预期的结果。
+### 3. Python analysis
 
-## Known Limitations 已知局限
+Install dependencies:
 
-**EN**: This project documents its limitations rather than hiding them — including several identified during external code review that are confirmed real but not yet resolved (pending sensitivity experiments before deciding whether/how to fix). Full list, with severity and current status, in [`docs/limitations.md`](docs/limitations.md).
+```bash
+pip install -r python_analysis/requirements.txt
+```
 
-**中**：这个项目选择记录局限而不是隐藏——包括几项在外部代码审查中被确认真实存在、但尚未处理（等待敏感性实验结果再决定要不要改、怎么改）的问题。完整清单及当前状态见 [`docs/limitations.md`](docs/limitations.md)。
+Published-evidence workflow (reviewed CSVs already in this repository). From the repository root:
 
-## Collaboration Note 协作声明
+```bash
+WETLAND_DATA_DIR=outputs/core python python_analysis/src/trend_analysis.py
+```
 
-**EN**: The original analysis pipeline was developed collaboratively with AI-assisted (conversational) debugging as part of a team project. The code in this repository is an independent re-implementation, written after understanding every key design decision (why a factory-function pattern, why endmembers must be computed dynamically, why fate-group classification can't use a binary mask) rather than a direct copy of the original.
+Script-specific working directories, additional analyses, and the `WETLAND_DATA_DIR=../../outputs/core` form used from `python_analysis/src/` are documented in [`python_analysis/README.md`](python_analysis/README.md).
 
-**中**：本项目分析流程最初在 AI 辅助（对话式调试）下与团队协作完成；本仓库中的代码是在理解每个关键设计决策（为什么用工厂函数、为什么端元要动态计算、为什么命运分组不能用二值掩膜）基础上重新独立实现的版本。
+## What went wrong (and what I fixed)
+
+### 1. Cross-region state leakage
+
+An early version used a shared mutable `roi`. Functions created while `roi` pointed to one region could later evaluate against another region after reassignment, so results depended on execution order. The factory function `makeRegionPipeline(roi, startMonth, endMonth)` isolates each region's parameters.
+
+### 2. Comparing statistics that were not equivalent
+
+An initial SixCategory vs transition-area comparison showed an approximately 1.7–2.2× discrepancy. Cloud-gap and wetland-definition hypotheses were tested and did not explain the gap. The root issue was mismatched statistical quantities. After aligning the compared quantities, the cross-check converged to <10%.
+
+### 3. Measuring lost wetlands in the wrong year
+
+An end-year dynamic-mask approach produced empty or incorrect lost-wetland results because those pixels were no longer classified as wetland at the end of the period. The final implementation evaluates lost wetlands before conversion.
+
+More debugging and methodology notes are in [`docs/methodology_notes.md`](docs/methodology_notes.md).
+
+## Validation
+
+| Check | Result |
+| --- | --- |
+| Regional FVC/EVI/NDMI series | 3 regions × 36 years exported and loaded |
+| Report trend comparison | 6/6 region-period cases matched in direction and p-value |
+| YRD fixed-endmember rerun | max difference ≈ `2.22×10⁻¹⁶` |
+| Six-category validation | 18/18 published values matched; public CSV max difference = `0.0 km²` |
+| Endmember sensitivity | YRD: sensitive · GBA: sensitive · BTH: unstable |
+
+The six-category validation also showed only floating-point-scale differences (~10^-7–10^-6 km²) before CSV serialization.
+
+Full validation history, including rejected hypotheses, is documented in [`docs/methodology_notes.md`](docs/methodology_notes.md).
+
+## Repository structure
+
+```text
+wetland-fvc-pipeline/
+├── gee_scripts/            # Earth Engine processing
+├── python_analysis/        # trend analysis, validation, figures
+├── outputs/
+│   ├── core/               # reviewed regional time series
+│   ├── analysis/           # trend, six-category, and sensitivity tables
+│   └── validation/         # report-comparison and six-category checks
+├── docs/                   # architecture, schema, methodology, limitations
+├── report/                 # reserved; full report not included
+└── README.md
+```
+
+## Data and reproducibility
+
+Raw Landsat and GLC_FCS30D imagery are not committed. [`outputs/`](outputs/) contains aggregated reviewed evidence (CSV tables), not raw raster data.
+
+A private administrative-boundary GEE asset is the current reproducibility gap. Reconstruction instructions are in [`gee_scripts/regions_config.js`](gee_scripts/regions_config.js).
+
+## Known limitations
+
+Known methodological and implementation limitations are tracked in [`docs/limitations.md`](docs/limitations.md).
+
+## Project context
+
+This repository grew out of the vegetation/FVC module of a larger undergraduate wetland research project.
+
+AI tools were used for conversational debugging and code review during development. The repository reflects the implementation, failure cases, validation results, and methodological decisions tested against the project's actual data.
 
 ## License
 
-MIT License (code). Underlying datasets follow their own original licenses and are out of scope for this repository.
+Code in this repository is released under the [MIT License](LICENSE).
+
+External datasets (Landsat, GLC_FCS30D, and related products) remain under their original licenses and terms of use.
