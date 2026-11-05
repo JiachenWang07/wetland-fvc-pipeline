@@ -62,10 +62,45 @@ def validate_derived() -> None:
             raise AssertionError(f"{region}: transition table copies differ")
 
 
+def validate_documented_findings() -> None:
+    """Recompute the headline numeric claims from their canonical tables."""
+    scale = pd.read_csv(DATA / "Stage5_QA_Scale_30_100_250_500m.csv")
+    base = scale.loc[scale["scale_m"] == 30, ["region", "year", "fvc_mean_area_weighted"]]
+    base = base.rename(columns={"fvc_mean_area_weighted": "fvc_30"})
+    coarse = scale.loc[scale["scale_m"] == 500, ["region", "year", "fvc_mean_area_weighted"]]
+    coarse = coarse.rename(columns={"fvc_mean_area_weighted": "fvc_500"})
+    paired = base.merge(coarse, on=["region", "year"]).dropna()
+    differences = (paired["fvc_30"] - paired["fvc_500"]).abs()
+    if len(differences) != 14:
+        raise AssertionError("scale comparison: expected 14 valid 30 m versus 500 m pairs")
+    if abs(differences.mean() - 0.02238313635922321) > 1e-12:
+        raise AssertionError("scale comparison: documented mean absolute difference changed")
+    if abs(differences.max() - 0.058985434804979586) > 1e-12:
+        raise AssertionError("scale comparison: documented maximum difference changed")
+
+    agreement = pd.read_csv(DATA / "analysis" / "city_endpoint_direction_agreement_summary.csv")
+    all_qc50 = agreement[(agreement["scenario"] == "qc50") & (agreement["region"] == "ALL")]
+    if len(all_qc50) != 1:
+        raise AssertionError("endpoint agreement: expected one qc50/ALL summary row")
+    row = all_qc50.iloc[0]
+    expected = {
+        "cities": 64,
+        "direction_consistent": 48,
+        "direction_flips": 16,
+        "direction_consistency_share": 0.75,
+        "fixed_tfpw_fdr_sig": 0,
+        "dynamic_tfpw_fdr_sig": 0,
+    }
+    for column, value in expected.items():
+        if row[column] != value:
+            raise AssertionError(f"endpoint agreement: documented {column} changed")
+
+
 def main() -> None:
     validate_regional()
     validate_city()
     validate_derived()
+    validate_documented_findings()
     print("Repository validation passed: reviewed public-data contract is consistent.")
 
 

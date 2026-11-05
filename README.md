@@ -124,3 +124,5 @@ These are described in detail in [`docs/methodology_notes.md`](docs/methodology_
 Raw Landsat and GLC_FCS30D imagery are not committed. The public repository contains aggregate CSV evidence, scripts, and selected figures. Some raster analyses require upstream GEE exports that are too large or dependent on private geometry assets to reproduce from a public clone alone.
 
 Code is released under the [MIT License](LICENSE). Landsat, GLC_FCS30D, OpenStreetMap, CARTO, and other external data remain under their original terms.
+
+See the [changelog](CHANGELOG.md) for the distinction between the reviewed Stage 5 release and the retained historical workflow.

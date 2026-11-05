@@ -36,4 +36,4 @@ The committed aggregate tables reproduce the public statistical figures. Recompu
 
 ## Highest-value future validation
 
-The strongest next additions would be independent boundary reconstruction, overlap-year cross-sensor harmonization, reference-site or field validation of endpoints, annual uncertainty propagation, and a minimum-observation rule for any future pixelwise trend product. These are open extensions, not silently assumed complete.
+The strongest next additions would be independent boundary reconstruction, overlap-year cross-sensor harmonization, reference-site or field validation of endpoints, annual uncertainty propagation, and a minimum-observation rule for any future pixelwise trend product. These are open extensions, not silently assumed complete. The boundary replacement acceptance protocol is specified in [`public_boundary_reconstruction.md`](public_boundary_reconstruction.md).
