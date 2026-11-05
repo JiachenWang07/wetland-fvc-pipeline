@@ -2,6 +2,25 @@
 
 > **Scope:** this document primarily describes exports from the historical modular GEE pipeline. The current reviewed Stage 5 tables and canonical filenames are listed in [`../outputs/stage5_final/README.md`](../outputs/stage5_final/README.md). Do not mix 500 m/dynamic-endmember fields below with the reviewed 30 m/fixed-endpoint series in one comparison.
 
+## Stage 5 sensor-overlap diagnostic
+
+### `Stage5_QA_L7_L8_CommonSupport_2013_2020.csv`
+
+One row per region × year for 2013–2020 (24 rows expected). Landsat 7 and Landsat 8 are composited separately and compared only on wetland pixels valid in both composites.
+
+| Column | Description |
+| --- | --- |
+| `region`, `year`, `scale_m` | Study region, same-year comparison, and 30 m aggregation scale |
+| `l7_scenes`, `l8_scenes` | Scene counts entering the two seasonal composites |
+| `wetland_area_km2` | Wetland-mask area before sensor-validity intersection |
+| `common_valid_area_km2`, `common_valid_fraction` | Area and fraction valid in both sensor composites |
+| `ndvi_l7`, `ndvi_l8`, `ndvi_l8_minus_l7` | Common-support area-weighted NDVI and signed difference |
+| `fvc_l7`, `fvc_l8`, `fvc_l8_minus_l7` | Common-support area-weighted FVC and signed difference |
+| `soil_endpoint`, `veg_endpoint` | Fixed regional endpoints shared by both sensor calculations |
+| `comparison_support` | Explicit marker that the comparison uses same-year common valid wetland pixels |
+
+This table is not yet a committed result. The schema documents the planned export so it can be reviewed before GEE execution.
+
 Column-level schema for every product exported by `gee_scripts/`. All exports land in a single Google Drive folder: `Wetland_FVC_Exports`. `{region}` is one of `YRD` / `GBA` / `BTH`.
 
 Reviewed evidence is published under `outputs/core/`, `outputs/analysis/`, and `outputs/validation/`. This document describes GEE export products; published CSVs are the authoritative schema reference where available.
