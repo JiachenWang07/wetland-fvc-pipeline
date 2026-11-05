@@ -1,189 +1,108 @@
-# wetland-fvc-pipeline
+# Wetland vegetation change across three Chinese urban regions
 
-A reproducible geospatial pipeline for analyzing long-term wetland vegetation change with Google Earth Engine and Python.
+This repository contains the vegetation-cover part of an undergraduate SRDP wetland project. It follows fractional vegetation cover (FVC) in the Yangtze River Delta, Greater Bay Area, and Beijing–Tianjin–Hebei from 1985 to 2020 using Landsat, Google Earth Engine, and Python.
 
-**Case study:** Yangtze River Delta (YRD), Greater Bay Area (GBA), and Beijing–Tianjin–Hebei (BTH), 1985–2020.
+![Yangtze River Delta pixel-level FVC trend classification](docs/assets/yrd_fvc_trend_classification_1985_2020.png)
 
-![Stage 5 regional FVC time series](docs/assets/stage5/regional_fvc_30m.png)
+*Yangtze River Delta spatial screening map. The red–yellow–green classes come from a pixel-level OLS fit within the 2020 wetland extent. This is an exploratory spatial layer, not the final regional trend test; the thresholds are empirical and the map should not be read as a causal recovery or degradation assessment.*
 
-> 中文简介：这是一个从本科科研中的湿地植被分析工作发展而来的地理空间数据项目，使用 Google Earth Engine 和 Python 处理 1985–2020 年 Landsat 时序数据。仓库主要关注可复现的数据处理、趋势分析和结果验证，而不仅是最终的遥感制图结果。
+The map above is where the project becomes tangible: regional averages can tell us whether FVC changed, but the spatial pattern shows that different wetland systems inside the same urban region did not move together. The repository keeps both views and also records where they cannot be compared directly.
 
-## Overview
+## What I investigated
 
-This project examines Fractional Vegetation Cover (FVC) change in wetlands across three Chinese urban agglomerations: YRD, GBA, and BTH.
+- How wetland FVC changed across the three regions over 36 years
+- Whether the result changes with spatial scale or endpoint choice
+- How much variation is hidden by a single regional average
+- Which apparent changes coincide with sensor, classification, or coverage boundaries
+- Which parts of the original workflow remain useful and which should only be treated as historical diagnostics
 
-## 2026 Stage 5 results update
+## The result used for comparison
 
-The repository now includes the 30 m results used in the project completion report. The final reporting workflow uses strict Landsat QA masking, growing-season median composites, fixed regional endpoints, pixelwise FVC, effective-area weighting, and no adjacent-year substitution. Regional trends are evaluated separately for 1985–2012 and 2013–2020.
+The reviewed regional and city tables use a single reporting basis:
 
-The earlier dynamic-endmember and 500 m workflow is retained as development and sensitivity evidence, but it is no longer the primary reporting standard.
+- Landsat Collection 2 Level 2 surface reflectance
+- QA masking for cloud, cloud shadow, snow, and saturation
+- growing-season **median** composites
+- pixel-level NDVI and FVC, clipped to `0–1`
+- fixed regional endpoints for cross-year comparison
+- effective-area weighting at the native **30 m** Landsat scale
+- no adjacent-year filling when a region or city is missing
 
-- [Method and repository audit](docs/stage5_update_audit_2026.md)
-- [Stage 5 aggregate results](outputs/stage5_final/README.md)
-- [Stage 5 GEE export script](gee_scripts/stage5/stage5_final_method_qa.js)
-- [Updated figures](docs/assets/stage5/)
+The 500 m workflow and annual dynamic endpoints remain in the repository because they were part of the development process and are useful sensitivity checks. They are not interchangeable with the reviewed 30 m result.
 
-![Stage 5 results and observation coverage](docs/assets/stage5/regional_fvc_area_coverage.png)
+![Reviewed 30 m regional FVC series](docs/assets/stage5/regional_fvc_30m.png)
 
-### Publication figures
+The dashed line marks the 2013 Landsat processing transition. It is shown because a change near that year can contain both ecological and sensor-related effects.
 
-The reviewed Stage 5 tables are also presented as a report-ready visual set. Each figure keeps the statistical boundary visible: 30 m effective-area-weighted FVC for formal statistics, no adjacent-year filling, and 120 m only for the optional spatial display.
+## What the checks changed
 
-- [Figure guide and usage notes](docs/assets/publication/README.md)
-- [Publication figure generator](python_analysis/src/publication_figures.py)
+Several choices that initially looked like implementation details changed the interpretation:
+
+1. **30 m and 500 m were not equivalent.** Across 14 valid region–year comparisons, the mean absolute FVC difference was `0.022383` and the maximum was `0.058985`. The final regional and city summaries therefore use 30 m.
+2. **FVC has to be calculated before aggregation.** Averaging NDVI first and then applying the FVC equation is not the same as calculating pixel FVC and weighting valid pixels by area.
+3. **The 1985 comparison is incomplete.** GBA has no valid 1985 result in the reviewed workflow, so it is not filled from a neighbouring year and is not used for a three-region 1985 ranking.
+4. **Endpoint choice matters.** Some trend conclusions are stable, but YRD 1985–2005 is significance-sensitive and BTH 2005–2020 is conclusion-sensitive under the endpoint comparison.
+5. **A map and a regional trend test answer different questions.** The spatial OLS classification is useful for locating patterns; the reviewed regional inference uses segmented Sen slope and TFPW Mann–Kendall tests.
+
+The audit trail and the remaining limitations are documented in [the Stage 5 review](docs/stage5_update_audit_2026.md) and [limitations](docs/limitations.md).
+
+## Selected views
+
+The figures below are derived from the reviewed tables. They are supporting views rather than substitutes for the underlying CSV files.
 
 ![Three-region FVC overview](docs/assets/publication/图A_三大城市群FVC综合总览.png)
 
+![City-level FVC change ranking](docs/assets/publication/图C_城市FVC变化排名.png)
+
+The transition figure describes the land-cover classes recorded before wetland gain and after wetland loss. Because 1995–2000 crosses a product time-organization boundary, the ribbons should not be read as direct proof of ecological restoration.
+
 ![Wetland transition structure](docs/assets/publication/图B_1995_2000湿地转化桑基图.png)
 
-The workflow includes:
+[Figure notes and downloadable PDF versions](docs/assets/publication/README.md)
 
-- Landsat time-series processing in Google Earth Engine
-- dynamic and fixed-endmember FVC estimation
-- wetland fate classification (persistent / gained / lost)
-- Sen's slope and Mann-Kendall trend analysis
-- raster-based area statistics
-- cross-method validation and diagnostic checks
-
-The project originated from the vegetation-analysis part of an undergraduate research project. This repository contains the independently implemented and validated workflow developed from that work.
-
-## Historical pipeline
+## Repository map
 
 ```text
-Landsat + GLC_FCS30D
-        │
-        ▼
-Google Earth Engine
-  ├─ Landsat preprocessing
-  ├─ NDVI / EVI / NDMI
-  ├─ FVC estimation
-  ├─ wetland masks
-  └─ spatial exports
-        │
-        ▼
-   Google Drive
-        │
-        ▼
-      Python
-  ├─ Sen's slope
-  ├─ Mann-Kendall
-  ├─ six-category statistics
-  ├─ sensitivity analysis
-  └─ validation / figures
+wetland-fvc-pipeline/
+├── gee_scripts/
+│   ├── stage5/             # reviewed 30 m export and QA workflow
+│   └── *.js                # historical and diagnostic GEE modules
+├── python_analysis/src/    # trend tests, validation, and figures
+├── outputs/
+│   ├── core/               # historical reviewed regional series
+│   ├── stage5_final/       # current regional, city, scale, and QA tables
+│   ├── analysis/           # derived statistics
+│   └── validation/         # cross-check evidence
+└── docs/                   # method notes, limitations, and figure assets
 ```
 
-Earth Engine runs server-side, so the GEE and Python stages are connected through exported files rather than a local subprocess.
+## Reproduce the reviewed figures
 
-Each study region is instantiated through `makeRegionPipeline(roi, startMonth, endMonth)`, which keeps regional state isolated while reusing the same processing logic.
-
-## Running the project
-
-### 1. Google Earth Engine
-
-For the final 30 m reporting tables, run [`gee_scripts/stage5/stage5_final_method_qa.js`](gee_scripts/stage5/stage5_final_method_qa.js) in the Earth Engine Code Editor. The historical combined pipeline remains available at [`gee_scripts/run_all_combined.js`](gee_scripts/run_all_combined.js) for development-history and legacy-product reproduction.
-
-A modular alternative (load scripts in order) is documented in [`gee_scripts/README.md`](gee_scripts/README.md).
-
-The region-construction module depends on a private administrative-boundary asset. See [`gee_scripts/README.md`](gee_scripts/README.md) and [`docs/limitations.md`](docs/limitations.md).
-
-### 2. Export
-
-Approve the generated tasks in the GEE Tasks tab. Exports go to the Google Drive folder `Wetland_FVC_Exports`.
-
-### 3. Python analysis
-
-Install dependencies:
+Install the Python dependencies:
 
 ```bash
 pip install -r python_analysis/requirements.txt
 ```
 
-### Reproducible from the public repository
-
-The published `outputs/core/` CSVs are sufficient to rerun:
-
-- `trend_analysis.py`
-- regional Sen's slope / Mann–Kendall analysis
-- `report_comparison.py` and the documented 6/6 comparison
-- the FVC-trend portion of `plotting.py`
-
-From the repository root:
+Generate the publication figures from the committed Stage 5 tables:
 
 ```bash
-WETLAND_DATA_DIR=outputs/core python python_analysis/src/trend_analysis.py
+python python_analysis/src/publication_figures.py
 ```
 
-Not every Python script can run from `outputs/core/` alone. Script-specific working directories, additional analyses, and the `WETLAND_DATA_DIR=../../outputs/core` form used from `python_analysis/src/` are documented in [`python_analysis/README.md`](python_analysis/README.md).
+For fresh Earth Engine exports, run [`gee_scripts/stage5/stage5_final_method_qa.js`](gee_scripts/stage5/stage5_final_method_qa.js) in the GEE Code Editor. The administrative-boundary asset is private; its expected structure and the reconstruction route are described in [`gee_scripts/regions_config.js`](gee_scripts/regions_config.js) and [`docs/limitations.md`](docs/limitations.md).
 
-### Requires additional upstream GEE outputs
+## Method history
 
-- `six_category_area_stats.py` requires the regional GeoTIFF products used by the raster workflow and therefore cannot be recomputed from the public clone alone.
-- `cross_validation.py` requires WetlandTransitionStructure inputs in addition to SixCategory inputs.
-- The repository publishes reviewed validation evidence for those analyses, but not every upstream raster/table required to recompute them from scratch.
+The repository retains failed comparisons and superseded methods on purpose. Two examples shaped the final workflow:
 
-## What went wrong (and what I fixed)
+- a shared mutable region variable caused results to depend on execution order; the region factory now isolates each study area;
+- an early comparison mixed two different statistical quantities and produced an apparent `1.7–2.2×` discrepancy; aligning the scopes reduced the cross-check to below 10%.
 
-### 1. Cross-region state leakage
+These are described in detail in [`docs/methodology_notes.md`](docs/methodology_notes.md). The point is not that the first version was correct, but that each change can be traced to a specific failure, test, and revised interpretation.
 
-An early version used a shared mutable `roi`. Functions created while `roi` pointed to one region could later evaluate against another region after reassignment, so results depended on execution order. The factory function `makeRegionPipeline(roi, startMonth, endMonth)` isolates each region's parameters.
+## Data boundary
 
-### 2. Comparing statistics that were not equivalent
+Raw Landsat and GLC_FCS30D imagery are not committed. The public repository contains aggregate CSV evidence, scripts, and selected figures. Some raster analyses require upstream GEE exports that are too large or dependent on private geometry assets to reproduce from a public clone alone.
 
-An initial SixCategory vs transition-area comparison showed an approximately 1.7–2.2× discrepancy. Cloud-gap and wetland-definition hypotheses were tested and did not explain the gap. The root issue was mismatched statistical quantities. After aligning the compared quantities, the cross-check converged to <10%.
-
-### 3. Measuring lost wetlands in the wrong year
-
-An end-year dynamic-mask approach produced empty or incorrect lost-wetland results because those pixels were no longer classified as wetland at the end of the period. The final implementation evaluates lost wetlands before conversion.
-
-More debugging and methodology notes are in [`docs/methodology_notes.md`](docs/methodology_notes.md).
-
-## Validation of the historical workflow
-
-| Check | Result |
-| --- | --- |
-| Regional FVC/EVI/NDMI series | 3 regions × 36 years exported and loaded |
-| Report trend comparison | 6/6 region-period cases matched in direction and p-value |
-| YRD fixed-endmember rerun | max difference ≈ `2.22×10⁻¹⁶` |
-| Six-category validation | 18/18 published values matched; public CSV max difference = `0.0 km²` |
-| Endmember sensitivity | YRD: sensitive · GBA: sensitive · BTH: unstable |
-
-The six-category validation also showed only floating-point-scale differences (~10^-7–10^-6 km²) before CSV serialization.
-
-Full validation history, including rejected hypotheses, is documented in [`docs/methodology_notes.md`](docs/methodology_notes.md).
-
-## Repository structure
-
-```text
-wetland-fvc-pipeline/
-├── gee_scripts/            # Earth Engine processing
-├── python_analysis/        # trend analysis, validation, figures
-├── outputs/
-│   ├── core/               # reviewed regional time series
-│   ├── analysis/           # trend, six-category, and sensitivity tables
-│   └── validation/         # report-comparison and six-category checks
-├── docs/                   # architecture, schema, methodology, limitations
-├── report/                 # reserved; full report not included
-└── README.md
-```
-
-## Data and reproducibility
-
-Raw Landsat and GLC_FCS30D imagery are not committed. [`outputs/`](outputs/) contains aggregated reviewed evidence (CSV tables), not raw raster data.
-
-A private administrative-boundary GEE asset is the current reproducibility gap. Reconstruction instructions are in [`gee_scripts/regions_config.js`](gee_scripts/regions_config.js).
-
-## Known limitations
-
-Known methodological and implementation limitations are tracked in [`docs/limitations.md`](docs/limitations.md).
-
-## Project context
-
-This repository grew out of the vegetation/FVC module of a larger undergraduate wetland research project.
-
-AI tools were used for conversational debugging and code review during development. The repository reflects the implementation, failure cases, validation results, and methodological decisions tested against the project's actual data.
-
-## License
-
-Code in this repository is released under the [MIT License](LICENSE).
-
-External datasets (Landsat, GLC_FCS30D, and related products) remain under their original licenses and terms of use.
+Code is released under the [MIT License](LICENSE). Landsat, GLC_FCS30D, OpenStreetMap, CARTO, and other external data remain under their original terms.
