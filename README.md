@@ -64,6 +64,10 @@ Dataset identifiers, roles, access constraints, and redistribution boundaries ar
 
 The figures below are derived from the reviewed tables. They are supporting views rather than substitutes for the underlying CSV files.
 
+![Breakpoint and trend stability](docs/assets/publication/breakpoint_stability.png)
+
+Moving the candidate breakpoint from 2011 to 2015 changes post-break slope magnitudes substantially, especially for YRD and BTH. Leave-one-year-out checks show that the pre-2013 GBA and BTH declines remain directionally stable and significant in every run, while no post-2013 segment is significant in any run. BTH's post-2013 direction flips in one of eight omissions, so it should not be described as a stable recovery or degradation trend.
+
 ![City-level FVC change ranking](docs/assets/publication/city_fvc_change_ranking.png)
 
 The transition figure describes the land-cover classes recorded before wetland gain and after wetland loss. Because 1995–2000 crosses a product time-organization boundary, the ribbons should not be read as direct proof of ecological restoration.

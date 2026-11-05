@@ -11,7 +11,7 @@ This directory contains the aggregate data selected for the public SRDP vegetati
 
 ## Derived analysis
 
-The `analysis/` directory contains the canonical derived tables: segmented trend results, city endpoint-sensitivity results, city area–FVC change details, and wetland-transition tables. Figure scripts read these English-named files directly; duplicate presentation copies are intentionally not kept.
+The `analysis/` directory contains the canonical derived tables: segmented trend results, breakpoint and leave-one-year-out stability checks, city endpoint-sensitivity results, city area–FVC change details, and wetland-transition tables. Figure scripts read these English-named files directly; duplicate presentation copies are intentionally not kept.
 
 ## Important interpretation notes
 

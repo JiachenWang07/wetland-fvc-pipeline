@@ -51,6 +51,9 @@ def validate_derived() -> None:
         "regional_trends_mk_tfpw.csv",
         "city_endpoint_direction_agreement_summary.csv",
         "city_area_fvc_change_qc50.csv",
+        "breakpoint_sensitivity_2011_2015.csv",
+        "leave_one_year_out_trends.csv",
+        "leave_one_year_out_summary.csv",
     }
     missing = sorted(name for name in required if not (analysis / name).is_file())
     if missing:
@@ -60,6 +63,14 @@ def validate_derived() -> None:
         right = pd.read_csv(DATA / "transition" / f"{region}_WetlandTransitionStructure.csv")
         if not left.equals(right):
             raise AssertionError(f"{region}: transition table copies differ")
+    breakpoint = pd.read_csv(analysis / "breakpoint_sensitivity_2011_2015.csv")
+    leave_one_out = pd.read_csv(analysis / "leave_one_year_out_summary.csv")
+    if len(breakpoint) != 30:
+        raise AssertionError("breakpoint sensitivity: expected 30 region/segment/breakpoint rows")
+    if len(leave_one_out) != 6:
+        raise AssertionError("leave-one-year-out summary: expected six region/period rows")
+    if not leave_one_out["direction_agreement_share"].between(0, 1).all():
+        raise AssertionError("leave-one-year-out direction agreement outside [0, 1]")
 
 
 def validate_documented_findings() -> None:

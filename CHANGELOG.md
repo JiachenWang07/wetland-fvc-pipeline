@@ -10,6 +10,7 @@
 - documented evidence tiers, data access boundaries, limitations, and citation metadata;
 - added automated checks for schemas, year coverage, value ranges, city count, missing GBA 1985, transition-table consistency, and headline numeric findings.
 - added a same-year, common-support Landsat 7/8 overlap-validation workflow and analysis script; results remain pending until the GEE export is executed.
+- added offline breakpoint sensitivity and leave-one-year-out trend stability results from the committed 30 m annual tables.
 
 ## 1.0.0 — historical public release
 
