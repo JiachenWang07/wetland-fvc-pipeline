@@ -1,6 +1,6 @@
-# Stage 5 final results
+# Reviewed Stage 5 results
 
-This directory contains the aggregate data used in the 2026 completion report.
+This directory contains the aggregate data selected for the public SRDP vegetation-cover component. It is the current quantitative evidence layer; earlier outputs elsewhere in the repository are retained as method history and sensitivity evidence.
 
 ## Primary inputs
 
@@ -11,7 +11,7 @@ This directory contains the aggregate data used in the 2026 completion report.
 
 ## Derived analysis
 
-The `analysis/` directory contains segmented trend results, city endpoint-sensitivity results, city area–FVC change details, and wetland-transition tables.
+The `analysis/` directory contains the canonical derived tables: segmented trend results, city endpoint-sensitivity results, city area–FVC change details, and wetland-transition tables. Figure scripts read these English-named files directly; duplicate presentation copies are intentionally not kept.
 
 ## Important interpretation notes
 

@@ -6,7 +6,7 @@ Python 统计分析与可视化代码，接在 `gee_scripts/` 导出的 CSV 之�
 
 ## 状态
 
-- [x] `src/stage5_figures.py`（基于 `outputs/stage5_final/` 生成结题报告使用的30 m区域、城市和端元诊断图）
+- [x] `src/stage5_figures.py`（基于 `outputs/stage5_final/` 生成30 m区域、城市和端元诊断图）
 
 - [x] `src/data_loader.py`（公共数据读取：路径管理、读取容错、端元有效性检查）
 - [x] `src/trend_analysis.py`（Sen's slope + Mann-Kendall；区分已弃用的全周期检验和主用的分段检验）

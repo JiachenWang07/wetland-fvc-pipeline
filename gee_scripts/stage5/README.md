@@ -1,6 +1,6 @@
-# Stage 5 final reporting workflow
+# Reviewed Stage 5 workflow
 
-`stage5_final_method_qa.js` is the reporting-standard GEE script used to produce the aggregate tables under `outputs/stage5_final/`.
+`stage5_final_method_qa.js` is the reviewed GEE script used to produce the aggregate tables under `outputs/stage5_final/`.
 
 The script exports:
 

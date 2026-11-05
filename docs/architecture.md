@@ -1,5 +1,7 @@
 # Architecture
 
+> **Scope:** the diagram below preserves the historical modular workflow. The current reviewed comparison branch is `gee_scripts/stage5/stage5_final_method_qa.js` → `outputs/stage5_final/` → `python_analysis/src/publication_figures.py`. Its strict QA, median composites, fixed endpoints, 30 m effective-area weighting, and missing-year policy override the historical defaults for public comparisons.
+
 ## Data flow
 
 ```mermaid

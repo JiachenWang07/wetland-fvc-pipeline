@@ -14,9 +14,10 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "outputs" / "stage5_final"
+ANALYSIS = DATA / "analysis"
 TRANS = DATA / "transition"
-TREND = DATA / "Stage5_30m区域趋势_MK_TFPW.csv"
-CITY_AGREE = DATA / "城市趋势_一致性汇总.csv"
+TREND = ANALYSIS / "regional_trends_mk_tfpw.csv"
+CITY_AGREE = ANALYSIS / "city_endpoint_direction_agreement_summary.csv"
 OUT = ROOT / "docs" / "assets" / "publication"
 OUT.mkdir(parents=True, exist_ok=True)
 
@@ -250,7 +251,7 @@ save(fig, "wetland_transition_1995_2000.png")
 
 
 # Figure 3: publication-style city change ranking, balanced by region.
-detail = pd.read_csv(DATA / "表_Stage5城市面积FVC变化明细_qc50.csv")
+detail = pd.read_csv(ANALYSIS / "city_area_fvc_change_qc50.csv")
 fig, axes = plt.subplots(1, 3, figsize=(15, 8), sharex=True)
 for ax, r in zip(axes, REGIONS):
     d = detail[(detail.region == r) & (detail.included_qc50 == True)].sort_values("delta_fvc")

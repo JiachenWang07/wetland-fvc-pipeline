@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this workflow or its reviewed aggregate results, please cite this repository."
+title: "Wetland vegetation change across three Chinese urban regions"
+type: software
+authors:
+  - family-names: Wang
+    given-names: Jiachen
+repository-code: "https://github.com/JiachenWang07/wetland-fvc-pipeline"
+url: "https://github.com/JiachenWang07/wetland-fvc-pipeline"
+license: MIT
+date-released: 2026-11-05
+version: 1.1.0

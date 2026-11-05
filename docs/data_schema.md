@@ -1,5 +1,7 @@
 # Data Schema 数据契约
 
+> **Scope:** this document primarily describes exports from the historical modular GEE pipeline. The current reviewed Stage 5 tables and canonical filenames are listed in [`../outputs/stage5_final/README.md`](../outputs/stage5_final/README.md). Do not mix 500 m/dynamic-endmember fields below with the reviewed 30 m/fixed-endpoint series in one comparison.
+
 Column-level schema for every product exported by `gee_scripts/`. All exports land in a single Google Drive folder: `Wetland_FVC_Exports`. `{region}` is one of `YRD` / `GBA` / `BTH`.
 
 Reviewed evidence is published under `outputs/core/`, `outputs/analysis/`, and `outputs/validation/`. This document describes GEE export products; published CSVs are the authoritative schema reference where available.

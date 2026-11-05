@@ -4,7 +4,11 @@
 
 ---
 
-## 核心方法定型 Final Methodology
+## Historical workflow note (superseded for current comparisons)
+
+> The section below records the earlier dynamic-endmember/500 m workflow and its debugging history. It is retained for provenance, not presented as the current comparison method. The reviewed Stage 5 result uses strict QA, growing-season median composites, fixed regional endpoints, pixelwise FVC, 30 m effective-area weighting, and no adjacent-year substitution. See [`stage5_update_audit_2026.md`](stage5_update_audit_2026.md) and [`research_status.md`](research_status.md).
+
+## 早期核心方法定型 Historical Methodology
 
 - **FVC 计算**：二分像元模型，动态端元（每年每区域，全域NDVI 5%/95%分位数作为"纯裸土/纯植被"上下限）
 - **固定端元**（跨年比较验证用，取值为各区域36年动态端元的均值）：

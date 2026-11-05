@@ -1,0 +1,17 @@
+name: Validate public data contract
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pandas
+      - run: python python_analysis/src/validate_repository.py
+      - run: python -m py_compile python_analysis/src/*.py

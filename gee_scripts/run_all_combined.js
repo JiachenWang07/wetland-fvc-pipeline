@@ -782,7 +782,7 @@ print('All regions submitted. Run the tasks in the Tasks tab under the ' + EXPOR
  * linear fit (ee.Reducer.linearFit()), not Sen's slope. Sen's slope is used
  * for the final reported REGIONAL trend results — a 36-value annual time
  * series of the whole-region mean FVC per region, not a per-pixel
- * computation (see colab_analysis/). GEE's built-in linear-fit reducer used
+ * computation (see python_analysis/). GEE's built-in linear-fit reducer used
  * here is OLS, applied per-pixel as a spatial screening tool serving a
  * different, coarser purpose than the regional Sen's-slope result. This
  * raster is therefore not the final trend-significance result — that

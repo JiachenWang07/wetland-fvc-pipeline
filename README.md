@@ -32,6 +32,17 @@ The reviewed regional and city tables use a single reporting basis:
 
 The 500 m workflow and annual dynamic endpoints remain in the repository because they were part of the development process and are useful sensitivity checks. They are not interchangeable with the reviewed 30 m result.
 
+### Evidence status
+
+| Layer | Status | Appropriate use |
+| --- | --- | --- |
+| `outputs/stage5_final/` regional and city tables | **Reviewed result** | Cross-region and cross-year quantitative comparison |
+| Scale, endpoint, coverage, and validation tables | **Supporting evidence** | Robustness checks and qualification of conclusions |
+| 2020 continuous maps | **Display products (120 m)** | Spatial context only; not substitutes for 30 m statistics |
+| Dynamic-endpoint, 500 m, OLS-class, and fallback outputs | **Historical / diagnostic** | Method development and sensitivity analysis only |
+
+The authoritative scope statement is in [`docs/research_status.md`](docs/research_status.md).
+
 ![Reviewed FVC overview](docs/assets/publication/fvc_overview.png)
 
 The dashed line marks the 2013 Landsat processing transition. It is shown because a change near that year can contain both ecological and sensor-related effects.
@@ -40,13 +51,14 @@ The dashed line marks the 2013 Landsat processing transition. It is shown becaus
 
 Several choices that initially looked like implementation details changed the interpretation:
 
-1. **30 m and 500 m were not equivalent.** Across 14 valid region–year comparisons, the mean absolute FVC difference was `0.022383` and the maximum was `0.058985`. The final regional and city summaries therefore use 30 m.
+1. **30 m and 500 m were not equivalent.** Across 14 valid region–year comparisons, the mean absolute FVC difference was `0.022383` and the maximum was `0.058985`. The reviewed regional and city summaries therefore use 30 m.
 2. **FVC has to be calculated before aggregation.** Averaging NDVI first and then applying the FVC equation is not the same as calculating pixel FVC and weighting valid pixels by area.
 3. **The 1985 comparison is incomplete.** GBA has no valid 1985 result in the reviewed workflow, so it is not filled from a neighbouring year and is not used for a three-region 1985 ranking.
-4. **Endpoint choice matters.** Some trend conclusions are stable, but YRD 1985–2005 is significance-sensitive and BTH 2005–2020 is conclusion-sensitive under the endpoint comparison.
+4. **Endpoint choice matters.** Under the 50% baseline-coverage screen, fixed and dynamic endpoints give the same city trend direction for 48 of 64 cities (`75.0%`); 16 direction flips are retained as method-sensitive cases. No city remains significant after the documented within-region FDR correction.
 5. **A map and a regional trend test answer different questions.** The continuous 2020 map shows spatial variation at one time point; regional inference uses the annual 30 m tables with segmented Sen slope and TFPW Mann–Kendall tests.
 
 The audit trail and the remaining limitations are documented in [the Stage 5 review](docs/stage5_update_audit_2026.md) and [limitations](docs/limitations.md).
+Dataset identifiers, roles, access constraints, and redistribution boundaries are listed in [data sources](docs/data_sources.md).
 
 ## Selected views
 
@@ -88,6 +100,12 @@ Generate the publication figures from the committed Stage 5 tables:
 
 ```bash
 python python_analysis/src/publication_figures.py
+```
+
+Validate the committed public data contract:
+
+```bash
+python python_analysis/src/validate_repository.py
 ```
 
 For fresh Earth Engine exports, run [`gee_scripts/stage5/stage5_final_method_qa.js`](gee_scripts/stage5/stage5_final_method_qa.js) in the GEE Code Editor. The administrative-boundary asset is private; its expected structure and the reconstruction route are described in [`gee_scripts/regions_config.js`](gee_scripts/regions_config.js) and [`docs/limitations.md`](docs/limitations.md).

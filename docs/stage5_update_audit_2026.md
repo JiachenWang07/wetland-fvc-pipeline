@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This update aligns the public repository with the method and results used in the 2026 completion report. The earlier repository remains useful as a record of pipeline development, debugging, and historical validation, but several earlier defaults are no longer the reporting standard.
+This update aligns the public repository with the reviewed method and results for the SRDP vegetation-cover component. The earlier repository remains useful as a record of pipeline development, debugging, and historical validation, but several earlier defaults are no longer the current comparison standard.
 
 ## Current reporting standard
 
@@ -25,7 +25,7 @@ This update aligns the public repository with the method and results used in the
 | Landsat and GLC-FCS30D data sources | Keep | These are unchanged in the final workflow. |
 | Existing 500 m regional CSVs | Keep as legacy evidence | They document the earlier workflow but are not interchangeable with the final 30 m results. |
 | Dynamic-endmember regional time series | Keep as sensitivity evidence | Dynamic endpoints can absorb part of the interannual signal. The final report uses fixed endpoints as the primary scale. |
-| Adjacent-year image fallback | Retire from final reporting | The final workflow preserves missing years instead of substituting neighboring years. |
+| Adjacent-year image fallback | Retire from reviewed results | The reviewed workflow preserves missing years instead of substituting neighboring years. |
 | Earlier cloud mask using only cloud and shadow bits | Replace | The Stage 5 mask also removes fill, dilated cloud, cirrus, snow, and saturated pixels. |
 | Full-period or 2005-break trend narrative | Replace | The final analysis separates 1985–2012 and 2013–2020 because of the Landsat sensor transition. |
 | Five-level per-pixel OLS trend map | Do not use as a headline final result | It lacks a uniform minimum-observation rule and is masked to 2020 wetland extent. |
