@@ -25,6 +25,17 @@ The earlier dynamic-endmember and 500 m workflow is retained as development and 
 
 ![Stage 5 results and observation coverage](docs/assets/stage5/regional_fvc_area_coverage.png)
 
+### Publication figures
+
+The reviewed Stage 5 tables are also presented as a report-ready visual set. Each figure keeps the statistical boundary visible: 30 m effective-area-weighted FVC for formal statistics, no adjacent-year filling, and 120 m only for the optional spatial display.
+
+- [Figure guide and usage notes](docs/assets/publication/README.md)
+- [Publication figure generator](python_analysis/src/publication_figures.py)
+
+![Three-region FVC overview](docs/assets/publication/图A_三大城市群FVC综合总览.png)
+
+![Wetland transition structure](docs/assets/publication/图B_1995_2000湿地转化桑基图.png)
+
 The workflow includes:
 
 - Landsat time-series processing in Google Earth Engine
