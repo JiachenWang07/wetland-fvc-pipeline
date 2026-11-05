@@ -2,9 +2,11 @@
 
 This repository contains the vegetation-cover part of an undergraduate SRDP wetland project. It follows fractional vegetation cover (FVC) in the Yangtze River Delta, Greater Bay Area, and Beijing–Tianjin–Hebei from 1985 to 2020 using Landsat, Google Earth Engine, and Python.
 
-![Continuous wetland FVC across the Yangtze River Delta in 2020](docs/assets/yrd_fvc_continuous_2020.png)
+![Continuous wetland FVC across the three urban regions in 2020](docs/assets/fvc_continuous_2020_triptych.png)
 
-*Continuous FVC values from the current 2020 spatial display export. The source raster has 120 m pixels and is shown with a continuous 0–1 scale; a power stretch improves low-value visibility without creating classes. Formal regional and city statistics remain based on the reviewed 30 m tables.*
+*Continuous FVC values from the three current 2020 spatial display exports. All panels use 120 m source pixels, one continuous 0–1 color scale, and the same power stretch; no FVC classes are created. Formal regional and city statistics remain based on the reviewed 30 m tables.*
+
+Full-size regional views: [Yangtze River Delta](docs/assets/spatial/yrd_fvc_continuous_2020.png) · [Greater Bay Area](docs/assets/spatial/gba_fvc_continuous_2020.png) · [Beijing–Tianjin–Hebei](docs/assets/spatial/bth_fvc_continuous_2020.png)
 
 The map above is where the project becomes tangible: regional averages can tell us whether FVC changed, but the spatial pattern shows that different wetland systems inside the same urban region did not move together. The repository keeps both views and also records where they cannot be compared directly.
 
