@@ -4,7 +4,7 @@ This repository contains the vegetation-cover part of an undergraduate SRDP wetl
 
 ![Continuous wetland FVC across the three urban regions in 2020](docs/assets/fvc_continuous_2020_triptych.png)
 
-*Continuous FVC values from the three current 2020 spatial display exports. All panels use 120 m source pixels, one continuous 0–1 color scale, and the same power stretch; no FVC classes are created. Formal regional and city statistics remain based on the reviewed 30 m tables.*
+*Continuous FVC values from the three current 2020 spatial display exports. All panels use 120 m source pixels, one continuous 0–1 color scale, and the same power stretch; no FVC classes are created. Thin city outlines from GADM 4.1 provide geographic reference only and are not used in the FVC calculation. Formal regional and city statistics remain based on the reviewed 30 m tables.*
 
 Full-size regional views: [Yangtze River Delta](docs/assets/spatial/yrd_fvc_continuous_2020.png) · [Greater Bay Area](docs/assets/spatial/gba_fvc_continuous_2020.png) · [Beijing–Tianjin–Hebei](docs/assets/spatial/bth_fvc_continuous_2020.png)
 

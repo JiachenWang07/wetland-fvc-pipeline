@@ -20,6 +20,50 @@ REGION_NAMES = {
     "GBA": "Greater Bay Area",
     "BTH": "Beijing–Tianjin–Hebei",
 }
+REGION_EPSG = {"YRD": 32650, "GBA": 32649, "BTH": 32650}
+GBA_CITIES = {
+    "Dongguan", "Foshan", "Guangzhou", "Huizhou", "Jiangmen",
+    "Shenzhen", "Zhaoqing", "Zhongshan", "Zhuhai",
+}
+
+
+def load_city_lines(shapefile_path: Path, region: str):
+    """Read selected GADM level-2 outlines and project them to raster UTM km."""
+    try:
+        import shapefile
+        from pyproj import Transformer
+    except ImportError as exc:
+        raise RuntimeError("City outlines require pyshp and pyproj") from exc
+
+    reader = shapefile.Reader(str(shapefile_path))
+    fields = {field[0]: index for index, field in enumerate(reader.fields[1:])}
+    transformer = Transformer.from_crs(4326, REGION_EPSG[region], always_xy=True)
+    lines = []
+    for shape_record in reader.iterShapeRecords():
+        record = shape_record.record
+        level1 = record[fields["NAME_1"]]
+        level2 = record[fields["NAME_2"]]
+        selected = (
+            (region == "YRD" and level1 in {"Anhui", "Jiangsu", "Shanghai", "Zhejiang"})
+            or (region == "BTH" and level1 in {"Beijing", "Hebei", "Tianjin"})
+            or (region == "GBA" and (level2 in GBA_CITIES or level1 == "Hong Kong"))
+        )
+        if not selected:
+            continue
+        points = shape_record.shape.points
+        parts = list(shape_record.shape.parts) + [len(points)]
+        for start, end in zip(parts[:-1], parts[1:]):
+            if end - start < 2:
+                continue
+            lon, lat = zip(*points[start:end])
+            x, y = transformer.transform(lon, lat)
+            lines.append((np.asarray(x) / 1000, np.asarray(y) / 1000))
+    return lines
+
+
+def draw_city_lines(ax, lines):
+    for x, y in lines:
+        ax.plot(x, y, color="#4B5552", linewidth=0.38, alpha=0.72, zorder=4)
 
 
 def load_geotiff(path: Path):
@@ -37,7 +81,8 @@ def load_geotiff(path: Path):
     return np.ma.masked_where(~valid, values), [xmin / 1000, xmax / 1000, ymin / 1000, ymax / 1000], pixel_x
 
 
-def render(input_path: Path, output_path: Path, region: str, year: int):
+def render(input_path: Path, output_path: Path, region: str, year: int,
+           boundary_path: Path | None = None, region_key: str | None = None):
     data, extent, pixel_m = load_geotiff(input_path)
     finite = data.compressed()
     cmap = LinearSegmentedColormap.from_list("fvc_continuous", PALETTE, N=256)
@@ -48,6 +93,8 @@ def render(input_path: Path, output_path: Path, region: str, year: int):
     ax.set_facecolor("#E8ECEB")
     norm = PowerNorm(gamma=0.62, vmin=0, vmax=1)
     im = ax.imshow(data, extent=extent, origin="upper", cmap=cmap, norm=norm, interpolation="nearest")
+    if boundary_path and region_key:
+        draw_city_lines(ax, load_city_lines(boundary_path, region_key))
     ax.set_aspect("equal", adjustable="box")
     ax.set_xlabel("Easting (km)", fontsize=10, color="#3C4743", labelpad=10)
     ax.set_ylabel("Northing (km)", fontsize=10, color="#3C4743", labelpad=10)
@@ -81,7 +128,8 @@ def render(input_path: Path, output_path: Path, region: str, year: int):
     plt.close(fig)
 
 
-def render_triptych(inputs: list[Path], output_path: Path, year: int = 2020):
+def render_triptych(inputs: list[Path], output_path: Path, year: int = 2020,
+                    boundary_path: Path | None = None):
     """Render three same-year rasters with one continuous scale and display norm."""
     if len(inputs) != 3:
         raise ValueError("Triptych requires YRD, GBA, and BTH rasters in that order")
@@ -104,6 +152,8 @@ def render_triptych(inputs: list[Path], output_path: Path, year: int = 2020):
     for ax, key, (data, extent, pixel_m) in zip(axes, REGION_NAMES, loaded):
         ax.set_facecolor("#E8ECEB")
         image = ax.imshow(data, extent=extent, origin="upper", cmap=cmap, norm=norm, interpolation="nearest")
+        if boundary_path:
+            draw_city_lines(ax, load_city_lines(boundary_path, key))
         ax.set_aspect("equal", adjustable="box")
         ax.set_title(REGION_NAMES[key], loc="left", fontsize=14, fontweight="bold", color="#172824", pad=10)
         ax.set_xticks([])
@@ -139,15 +189,17 @@ def main():
     parser.add_argument("--year", type=int, default=2020)
     parser.add_argument("--triptych", nargs=3, type=Path, metavar=("YRD", "GBA", "BTH"))
     parser.add_argument("--triptych-output", type=Path)
+    parser.add_argument("--city-boundaries", type=Path, help="GADM level-2 shapefile in EPSG:4326")
+    parser.add_argument("--region-key", choices=REGION_NAMES)
     args = parser.parse_args()
     if args.triptych:
         if args.triptych_output is None:
             parser.error("--triptych-output is required with --triptych")
-        render_triptych(args.triptych, args.triptych_output, args.year)
+        render_triptych(args.triptych, args.triptych_output, args.year, args.city_boundaries)
     else:
         if args.input is None or args.output is None:
             parser.error("input and output are required unless --triptych is used")
-        render(args.input, args.output, args.region, args.year)
+        render(args.input, args.output, args.region, args.year, args.city_boundaries, args.region_key)
 
 
 if __name__ == "__main__":
