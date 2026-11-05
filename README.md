@@ -2,9 +2,9 @@
 
 This repository contains the vegetation-cover part of an undergraduate SRDP wetland project. It follows fractional vegetation cover (FVC) in the Yangtze River Delta, Greater Bay Area, and Beijing–Tianjin–Hebei from 1985 to 2020 using Landsat, Google Earth Engine, and Python.
 
-![Yangtze River Delta pixel-level FVC trend classification](docs/assets/yrd_fvc_trend_classification_1985_2020.png)
+![Continuous wetland FVC across the Yangtze River Delta in 2020](docs/assets/yrd_fvc_continuous_2020.png)
 
-*Yangtze River Delta spatial screening map. The red–yellow–green classes come from a pixel-level OLS fit within the 2020 wetland extent. This is an exploratory spatial layer, not the final regional trend test; the thresholds are empirical and the map should not be read as a causal recovery or degradation assessment.*
+*Continuous FVC values from the current 2020 spatial display export. The source raster has 120 m pixels and is shown with a continuous 0–1 scale; a power stretch improves low-value visibility without creating classes. Formal regional and city statistics remain based on the reviewed 30 m tables.*
 
 The map above is where the project becomes tangible: regional averages can tell us whether FVC changed, but the spatial pattern shows that different wetland systems inside the same urban region did not move together. The repository keeps both views and also records where they cannot be compared directly.
 
@@ -30,7 +30,7 @@ The reviewed regional and city tables use a single reporting basis:
 
 The 500 m workflow and annual dynamic endpoints remain in the repository because they were part of the development process and are useful sensitivity checks. They are not interchangeable with the reviewed 30 m result.
 
-![Reviewed 30 m regional FVC series](docs/assets/stage5/regional_fvc_30m.png)
+![Reviewed FVC overview](docs/assets/publication/fvc_overview.png)
 
 The dashed line marks the 2013 Landsat processing transition. It is shown because a change near that year can contain both ecological and sensor-related effects.
 
@@ -42,7 +42,7 @@ Several choices that initially looked like implementation details changed the in
 2. **FVC has to be calculated before aggregation.** Averaging NDVI first and then applying the FVC equation is not the same as calculating pixel FVC and weighting valid pixels by area.
 3. **The 1985 comparison is incomplete.** GBA has no valid 1985 result in the reviewed workflow, so it is not filled from a neighbouring year and is not used for a three-region 1985 ranking.
 4. **Endpoint choice matters.** Some trend conclusions are stable, but YRD 1985–2005 is significance-sensitive and BTH 2005–2020 is conclusion-sensitive under the endpoint comparison.
-5. **A map and a regional trend test answer different questions.** The spatial OLS classification is useful for locating patterns; the reviewed regional inference uses segmented Sen slope and TFPW Mann–Kendall tests.
+5. **A map and a regional trend test answer different questions.** The continuous 2020 map shows spatial variation at one time point; regional inference uses the annual 30 m tables with segmented Sen slope and TFPW Mann–Kendall tests.
 
 The audit trail and the remaining limitations are documented in [the Stage 5 review](docs/stage5_update_audit_2026.md) and [limitations](docs/limitations.md).
 
@@ -50,13 +50,11 @@ The audit trail and the remaining limitations are documented in [the Stage 5 rev
 
 The figures below are derived from the reviewed tables. They are supporting views rather than substitutes for the underlying CSV files.
 
-![Three-region FVC overview](docs/assets/publication/图A_三大城市群FVC综合总览.png)
-
-![City-level FVC change ranking](docs/assets/publication/图C_城市FVC变化排名.png)
+![City-level FVC change ranking](docs/assets/publication/city_fvc_change_ranking.png)
 
 The transition figure describes the land-cover classes recorded before wetland gain and after wetland loss. Because 1995–2000 crosses a product time-organization boundary, the ribbons should not be read as direct proof of ecological restoration.
 
-![Wetland transition structure](docs/assets/publication/图B_1995_2000湿地转化桑基图.png)
+![Wetland transition structure](docs/assets/publication/wetland_transition_1995_2000.png)
 
 [Figure notes and downloadable PDF versions](docs/assets/publication/README.md)
 

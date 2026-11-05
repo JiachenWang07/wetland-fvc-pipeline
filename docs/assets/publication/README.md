@@ -1,29 +1,20 @@
-# 湿地 FVC 结题报告出版级图件
+# Figure set
 
-本目录汇总 2026-11-05 生成并复核的图件。统计图均由锁定的 Stage 5 结果重新绘制；空间图为 120 m 展示栅格，只用于呈现空间格局，不替代 30 m 正式统计。
+These figures were regenerated from the reviewed Stage 5 tables on 5 November 2026. All labels are in English and the visual system uses a restrained teal, terracotta, and slate palette.
 
-## 图件清单
+| File | Content | Statistical boundary |
+|---|---|---|
+| `fvc_overview` | Annual regional FVC, segmented trends, city distributions, and scale sensitivity | Regional values use effective-area weighting; 30 m is the reporting scale |
+| `city_fvc_change_ranking` | Cities with the largest positive and negative endpoint differences | Includes only cities with at least 50% valid baseline coverage; missing years are not filled |
+| `wetland_transition_1995_2000` | Recorded sources of wetland gain and destinations of wetland loss | Ribbon width represents product-recorded area; it is not direct evidence of ecological recovery |
 
-| 图件 | 内容 | 推荐用途 | 关键口径 |
-|---|---|---|---|
-| 图A 三大城市群 FVC 综合总览 | 区域年度序列、分段趋势、城市分布和尺度敏感性 | 摘要后或“总体变化特征”章节 | 年度区域值为有效面积加权 FVC；正式结果采用 30 m |
-| 图B 1995—2000 年湿地转化桑基图 | 三地湿地转入来源与转出去向 | “湿地类型转化”章节 | 流带宽度表示分类产品记录面积；不单独等同于生态恢复或退化 |
-| 图C 城市 FVC 变化排名 | 各城市首末有效节点变化及区域均值 | “城市差异”章节 | 使用城市统一结果表中的有效面积加权 FVC；缺测不跨年回填 |
-| 图D 2020 年 FVC 空间格局 | 全部湿地与植被湿地子集的空间对照 | “空间分布”章节 | 120 m 仅为可视化展示；30 m 结果用于正式统计 |
+PNG files are intended for the repository and presentations. Matching PDF files retain vector text and are preferable for print.
 
-## 文件格式
+The continuous Yangtze River Delta map is stored one level above as `yrd_fvc_continuous_2020.png`. It is generated from a 120 m spatial display export and uses actual FVC values from 0 to 1 without class thresholds. A continuous power stretch is used only to improve visibility; reviewed regional and city statistics remain based on the 30 m tables.
 
-- 图A—图C同时提供 PNG 与 PDF。PNG适合 Word 和网页，PDF适合矢量排版与印刷。
-- 图D目前提供高分辨率 PNG，图内已标明展示分辨率及 NoData 限制。
-- 图中数值不应从图像反推作为新统计结果；引用时应以仓库中的 CSV 和验收文件为准。
+## Reproduction
 
-## 建议的报告编排
-
-1. 用图A作为结果章节的总览图，先建立区域、时期、城市和尺度四层证据。
-2. 图C紧随城市差异文字，避免只给均值而看不到城市内部离散程度。
-3. 图D用于说明空间格局，并在图注中保留“120 m展示、30 m统计”的边界。
-4. 图B放在分类转化小节，正文只描述结构，不把分类跨期变化直接解释为生态因果。
-
-## 复现
-
-图A—图C由项目根目录的 `build_publication_visuals.py` 生成。建议使用固定的 Python 环境和中文字体缓存，以保证不同机器上的版式一致。
+```bash
+python python_analysis/src/publication_figures.py
+python python_analysis/src/spatial_fvc_map.py INPUT.tif docs/assets/yrd_fvc_continuous_2020.png
+```
