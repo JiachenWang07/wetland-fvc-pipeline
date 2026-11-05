@@ -4,13 +4,26 @@ A reproducible geospatial pipeline for analyzing long-term wetland vegetation ch
 
 **Case study:** Yangtze River Delta (YRD), Greater Bay Area (GBA), and Beijing–Tianjin–Hebei (BTH), 1985–2020.
 
-![YRD FVC trend classification](docs/assets/yrd_fvc_trend_classification_1985_2020.png)
+![Stage 5 regional FVC time series](docs/assets/stage5/regional_fvc_30m.png)
 
 > 中文简介：这是一个从本科科研中的湿地植被分析工作发展而来的地理空间数据项目，使用 Google Earth Engine 和 Python 处理 1985–2020 年 Landsat 时序数据。仓库主要关注可复现的数据处理、趋势分析和结果验证，而不仅是最终的遥感制图结果。
 
 ## Overview
 
 This project examines Fractional Vegetation Cover (FVC) change in wetlands across three Chinese urban agglomerations: YRD, GBA, and BTH.
+
+## 2026 Stage 5 results update
+
+The repository now includes the 30 m results used in the project completion report. The final reporting workflow uses strict Landsat QA masking, growing-season median composites, fixed regional endpoints, pixelwise FVC, effective-area weighting, and no adjacent-year substitution. Regional trends are evaluated separately for 1985–2012 and 2013–2020.
+
+The earlier dynamic-endmember and 500 m workflow is retained as development and sensitivity evidence, but it is no longer the primary reporting standard.
+
+- [Method and repository audit](docs/stage5_update_audit_2026.md)
+- [Stage 5 aggregate results](outputs/stage5_final/README.md)
+- [Stage 5 GEE export script](gee_scripts/stage5/stage5_final_method_qa.js)
+- [Updated figures](docs/assets/stage5/)
+
+![Stage 5 results and observation coverage](docs/assets/stage5/regional_fvc_area_coverage.png)
 
 The workflow includes:
 
@@ -23,7 +36,7 @@ The workflow includes:
 
 The project originated from the vegetation-analysis part of an undergraduate research project. This repository contains the independently implemented and validated workflow developed from that work.
 
-## Pipeline
+## Historical pipeline
 
 ```text
 Landsat + GLC_FCS30D
@@ -56,7 +69,7 @@ Each study region is instantiated through `makeRegionPipeline(roi, startMonth, e
 
 ### 1. Google Earth Engine
 
-Run [`gee_scripts/run_all_combined.js`](gee_scripts/run_all_combined.js) in the Earth Engine Code Editor. This is the recommended combined entry script and currently creates approximately 42 export tasks.
+For the final 30 m reporting tables, run [`gee_scripts/stage5/stage5_final_method_qa.js`](gee_scripts/stage5/stage5_final_method_qa.js) in the Earth Engine Code Editor. The historical combined pipeline remains available at [`gee_scripts/run_all_combined.js`](gee_scripts/run_all_combined.js) for development-history and legacy-product reproduction.
 
 A modular alternative (load scripts in order) is documented in [`gee_scripts/README.md`](gee_scripts/README.md).
 
@@ -113,7 +126,7 @@ An end-year dynamic-mask approach produced empty or incorrect lost-wetland resul
 
 More debugging and methodology notes are in [`docs/methodology_notes.md`](docs/methodology_notes.md).
 
-## Validation
+## Validation of the historical workflow
 
 | Check | Result |
 | --- | --- |

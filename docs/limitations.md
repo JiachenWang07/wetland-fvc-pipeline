@@ -1,5 +1,7 @@
 # Known Limitations 已知局限
 
+> **2026 Stage 5 update:** the completion-report workflow is documented in [`stage5_update_audit_2026.md`](stage5_update_audit_2026.md) and implemented separately in [`../gee_scripts/stage5/stage5_final_method_qa.js`](../gee_scripts/stage5/stage5_final_method_qa.js). It addresses the earlier cloud-mask, adjacent-year substitution, and 500 m reporting-scale concerns. The issue list below remains the audit record for the historical combined pipeline unless a row explicitly states otherwise.
+
 This document lists limitations honestly rather than hiding them, including items surfaced by external code review that are confirmed real but **not yet fixed in code** as of this writing — the review-and-triage process (see `methodology_notes.md`) intentionally happened before any code changes, so this list reflects the current, unmodified state of `gee_scripts/`.
 
 Status legend: 🔴 confirmed issue, not yet fixed · 🟡 needs empirical validation before deciding whether to fix · ⚪ documented tradeoff, not planned to change

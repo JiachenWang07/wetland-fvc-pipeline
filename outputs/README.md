@@ -1,5 +1,9 @@
 # outputs/
 
+## 2026 Stage 5 final results
+
+The current completion-report tables are published under [`stage5_final/`](stage5_final/README.md). They use 30 m effective-area-weighted FVC, strict QA masking, fixed regional endpoints, and no adjacent-year substitution. The `core/`, `analysis/`, and `validation/` directories below retain the earlier workflow and its validation record.
+
 Reviewed validation evidence published from this project. This is not the full set of approximately 42 GEE export tasks that `gee_scripts/` can produce. Raw Landsat/GLC source rasters and workflow GeoTIFF exports remain on Google Drive and are not distributed in Git.
 
 Published files here fall into two roles: **core inputs** that a fresh clone can use to rerun the documented trend-analysis path, and **analysis/validation evidence** (reviewed derived tables). The latter are not a substitute for every upstream raster or GEE table needed to recompute those results from scratch.
